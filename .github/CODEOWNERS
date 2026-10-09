@@ -1,14 +1,13 @@
-# GitHub 아이디로 교체하세요
-/db/                     @A-github-id
-/server/routes/auth*     @A-github-id
-/server/routes/tools*    @A-github-id
-/server/routes/reviews*  @A-github-id
-/client/pages/auth/      @A-github-id
-/client/pages/directory/ @A-github-id
-/client/pages/chatbot/   @B-github-id
-/server/routes/chat*     @B-github-id
-/server/routes/pipeline* @B-github-id
-/server/routes/library*  @B-github-id
-/client/pages/trend/     @C-github-id
-/server/routes/trend*    @C-github-id
-/server/routes/favorites* @C-github-id
+/db/                     @byeongokchoi
+/server/routes/auth*     @byeongokchoi
+/server/routes/tools*    @byeongokchoi
+/server/routes/reviews*  @byeongokchoi
+/client/pages/auth/      @byeongokchoi
+/client/pages/directory/ @byeongokchoi
+/client/pages/chatbot/   @Dodo-Jin
+/server/routes/chat*     @Dodo-Jin
+/server/routes/pipeline* @Dodo-Jin
+/server/routes/library*  @Dodo-Jin
+/client/pages/trend/     @jungwukc
+/server/routes/trend*    @jungwukc
+/server/routes/favorites* @jungwukc
