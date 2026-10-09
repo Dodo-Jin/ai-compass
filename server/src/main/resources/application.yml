@@ -1,0 +1,18 @@
+spring:
+  # 루트의 .env (PORT, DB_*)를 그대로 읽는다. 파일이 없으면 아래 기본값 사용
+  config:
+    import: optional:file:../.env[.properties]
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/${DB_NAME:ai_compass}?useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: none   # 테이블은 db/ 의 SQL로만 관리 (A 담당)
+    open-in-view: false
+  web:
+    resources:
+      static-locations: file:../client/   # client/ 를 정적 파일로 서빙
+
+server:
+  port: ${PORT:3000}

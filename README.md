@@ -1,10 +1,10 @@
 # 🧭 AI Compass
-AI 툴 디렉토리 + 챗봇 파이프라인 추천 플랫폼 (Bootstrap 5 / FlexStart, Node.js + MySQL)
+AI 툴 디렉토리 + 챗봇 파이프라인 추천 플랫폼 (Bootstrap 5 / FlexStart, Spring Boot(Java 21) + MySQL)
 
 ## 실행
 ```bash
 cp .env.example .env      # 값 채우기
-cd server && npm install && npm start
+cd server && gradle bootRun     # gradle 미설치 시 IntelliJ에서 server 폴더를 Gradle 프로젝트로 열고 AiCompassApplication 실행
 ```
 `http://localhost:3000` 에서 `client/` 가 정적으로 서빙됩니다.
 
@@ -18,5 +18,5 @@ cd server && npm install && npm start
 ## 규칙
 - `main` 직접 push 금지, `develop` 에서 `feature/<이름>-<기능>` 브랜치로 작업 후 PR
 - 내 폴더만 수정, 공용 파일(`partials/`, `common.*`, `config/`)은 작은 PR로 먼저 머지
-- 새 API 라우트: `server/routes/<이름>.routes.js` 만 만들면 `/api/<이름>` 으로 자동 등록
+- 새 API: `server/src/main/java/com/aicompass/<기능>/` 패키지 안에 Controller/Service/Repository 를 추가 (기능 패키지 밖은 수정 금지)
 - FlexStart 원본은 `client/assets/vendor/` 에 넣고 수정하지 않기
