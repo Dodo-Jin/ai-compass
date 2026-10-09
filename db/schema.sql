@@ -2,7 +2,7 @@
 CREATE DATABASE IF NOT EXISTS ai_compass DEFAULT CHARSET utf8mb4;
 USE ai_compass;
 
-﻿CREATE TABLE `Favorites` (
+CREATE TABLE `Favorites` (
 	`favorite_id`	INT	NOT NULL,
 	`user_id`	INT	NOT NULL,
 	`model_id`	INT	NOT NULL,
