@@ -1,0 +1,23 @@
+{
+  "success": true,
+  "data": {
+    "updatedAt": "2026-11-12T14:00:00+09:00",
+    "items": [
+      { "modelId": 1, "name": "ChatGPT", "category": "챗봇", "tags": ["ai chatbots", "writing", "research"], "rankChange": 0, "isNew": false, "trendScore": 98, "searchCount": 12000, "favoriteCount": 6700, "pipelineRate": 41, "isFavorite": true },
+      { "modelId": 2, "name": "Claude", "category": "챗봇", "tags": ["ai chatbots", "code assistant", "long docs"], "rankChange": 1, "isNew": false, "trendScore": 95, "searchCount": 9800, "favoriteCount": 5100, "pipelineRate": 38, "isFavorite": true },
+      { "modelId": 3, "name": "Gemini", "category": "챗봇", "tags": ["ai chatbots", "search", "multimodal"], "rankChange": -1, "isNew": false, "trendScore": 91, "searchCount": 9100, "favoriteCount": 4400, "pipelineRate": 33, "isFavorite": false },
+      { "modelId": 4, "name": "Perplexity", "category": "검색", "tags": ["search engine", "QA", "research"], "rankChange": 3, "isNew": false, "trendScore": 84, "searchCount": 6200, "favoriteCount": 3000, "pipelineRate": 27, "isFavorite": false },
+      { "modelId": 5, "name": "Cursor", "category": "코딩", "tags": ["code assistant", "IDE"], "rankChange": 0, "isNew": true, "trendScore": 80, "searchCount": 5400, "favoriteCount": 2800, "pipelineRate": 22, "isFavorite": false },
+      { "modelId": 6, "name": "Midjourney", "category": "이미지", "tags": ["image generation", "design"], "rankChange": -2, "isNew": false, "trendScore": 76, "searchCount": 4900, "favoriteCount": 2600, "pipelineRate": 18, "isFavorite": false },
+      { "modelId": 7, "name": "Suno", "category": "음성·음악", "tags": ["music", "audio generation"], "rankChange": 2, "isNew": false, "trendScore": 71, "searchCount": 4100, "favoriteCount": 2100, "pipelineRate": 15, "isFavorite": false },
+      { "modelId": 8, "name": "ElevenLabs", "category": "음성·음악", "tags": ["voice", "TTS", "dubbing"], "rankChange": 0, "isNew": false, "trendScore": 67, "searchCount": 3600, "favoriteCount": 1900, "pipelineRate": 17, "isFavorite": false },
+      { "modelId": 9, "name": "Notion AI", "category": "생산성", "tags": ["writing", "productivity"], "rankChange": -1, "isNew": false, "trendScore": 63, "searchCount": 3300, "favoriteCount": 1700, "pipelineRate": 12, "isFavorite": false },
+      { "modelId": 10, "name": "CapCut", "category": "영상", "tags": ["video editing", "shorts"], "rankChange": 4, "isNew": false, "trendScore": 60, "searchCount": 3000, "favoriteCount": 1500, "pipelineRate": 14, "isFavorite": false },
+      { "modelId": 11, "name": "Runway", "category": "영상", "tags": ["video generation", "editing"], "rankChange": 1, "isNew": false, "trendScore": 57, "searchCount": 2700, "favoriteCount": 1400, "pipelineRate": 11, "isFavorite": false },
+      { "modelId": 12, "name": "GitHub Copilot", "category": "코딩", "tags": ["code assistant", "autocomplete"], "rankChange": -3, "isNew": false, "trendScore": 55, "searchCount": 2600, "favoriteCount": 1600, "pipelineRate": 9, "isFavorite": false },
+      { "modelId": 13, "name": "DALL·E", "category": "이미지", "tags": ["image generation"], "rankChange": 0, "isNew": false, "trendScore": 52, "searchCount": 2400, "favoriteCount": 1100, "pipelineRate": 10, "isFavorite": false },
+      { "modelId": 14, "name": "Gamma", "category": "생산성", "tags": ["presentation", "slides"], "rankChange": 0, "isNew": true, "trendScore": 49, "searchCount": 2100, "favoriteCount": 900, "pipelineRate": 13, "isFavorite": false },
+      { "modelId": 15, "name": "Canva", "category": "이미지", "tags": ["design", "template"], "rankChange": -1, "isNew": false, "trendScore": 46, "searchCount": 1900, "favoriteCount": 1200, "pipelineRate": 8, "isFavorite": false }
+    ]
+  }
+}
