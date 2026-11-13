@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI 파이프라인 설계 | AI Compass</title>
+  <link href="/assets/vendor/flexstart/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/assets/vendor/flexstart/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="/assets/vendor/flexstart/css/main.css" rel="stylesheet">
+  <link href="/assets/css/common.css" rel="stylesheet">
+  <link href="/assets/css/pipeline.css" rel="stylesheet">
+</head>
+<body class="pl-page">
+  <div id="header"></div>
+
+  <main>
+    <div class="pl-title">
+      <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <h1>AI 파이프라인 설계
+          <span id="mock-badge" class="badge text-bg-warning align-middle fs-6 fw-normal ms-2" title="백엔드 연동 전 임시 데이터로 동작 중이에요" hidden>목 데이터</span>
+        </h1>
+        <nav aria-label="현재 위치">
+          <ol class="pl-crumbs"><li><a href="/">Home</a></li><li aria-current="page">Pipeline</li></ol>
+        </nav>
+      </div>
+    </div>
+
+    <div class="container pb-5">
+      <nav class="pl-mode mb-4" aria-label="추천 방식">
+        <a class="active" href="/pages/chatbot/chat.html" aria-current="page"><i class="bi bi-chat-dots" aria-hidden="true"></i>챗봇으로 추천</a>
+        <a href="/pages/chatbot/survey.html"><i class="bi bi-ui-checks" aria-hidden="true"></i>설문으로 추천</a>
+      </nav>
+
+      <div class="row g-4 pl-panels">
+        <!-- 챗봇 -->
+        <div class="col-lg-5 d-flex">
+          <div class="pl-panel" role="region" aria-labelledby="chat-h">
+            <div class="pl-panel-head"><h2 id="chat-h">AI 챗봇</h2></div>
+            <div id="chat-log" class="pl-chat-log" role="log" aria-live="polite" aria-relevant="additions" tabindex="0"></div>
+            <div class="pl-examples">
+              <p>예시 질문</p>
+              <div id="examples" class="pl-chips-row"></div>
+            </div>
+            <form id="chat-form" class="pl-chat-form">
+              <label for="chat-input" class="visually-hidden">고민 입력</label>
+              <textarea id="chat-input" class="form-control" rows="1" maxlength="500" placeholder="메시지를 입력하세요..."></textarea>
+              <button id="chat-send" class="pl-btn pl-btn-primary" type="submit">전송</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- 캔버스 -->
+        <div class="col-lg-7 d-flex">
+          <form id="save-form" class="pl-panel" novalidate aria-labelledby="canvas-h">
+            <div class="pl-panel-head"><h2 id="canvas-h">파이프라인 캔버스</h2></div>
+            <div class="pl-panel-body">
+              <div class="pl-title-row">
+                <label for="title-input">제목</label>
+                <input id="title-input" class="form-control" maxlength="100" placeholder="예: 유튜브 쇼츠 자동 제작" autocomplete="off">
+              </div>
+              <div id="canvas" class="pl-canvas"></div>
+              <div id="save-msg" class="mt-3" role="status" aria-live="polite"></div>
+            </div>
+            <div class="pl-panel-foot">
+              <button id="reset-btn" type="button" class="pl-btn">초기화</button>
+              <button id="save-btn" type="submit" class="pl-btn pl-btn-primary"><span class="save-label">보관함에 저장</span></button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="/assets/vendor/flexstart/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/vendor/sortablejs/Sortable.min.js"></script>
+  <script src="/assets/js/common/layout.js"></script>
+  <script type="module" src="/assets/js/chatbot/chat.js"></script>
+</body>
+</html>
