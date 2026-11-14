@@ -31,11 +31,11 @@ function normalizeTool(t) {
 }
 
 const real = {
-  /** POST /api/chat  { message } → { reply, blocks: [{ modelId, purpose, modelName, category, logoUrl }] } */
+  /** POST /api/v1/chat  { message } → { reply, blocks: [{ modelId, purpose, modelName, category, logoUrl }] } */
   chat: (message) => api('/chat', { method: 'POST', body: { message } }),
 
   /**
-   * POST /api/pipelines/recommend-by-survey  { job, usage, budget } → 툴 1개
+   * POST /api/v1/pipelines/recommend-by-survey  { job, usage, budget } → 툴 1개
    *   { modelId, name, category, logoUrl, subtitle?, rating?, reviewCount?, reason?, features?, priceText? }
    * modelId·name 외의 항목은 DB 에 값이 있을 때만 내려주면 되고, 화면은 있는 항목만 보여준다.
    */
@@ -44,13 +44,13 @@ const real = {
     return { ...r, modelId: r.modelId ?? r.model_id ?? r.id, name: r.name ?? r.modelName, logoUrl: r.logoUrl ?? r.logo_url ?? null };
   },
 
-  /** 캔버스의 "툴 추가" 목록. A 의 툴 API(GET /api/tools)를 쓴다 — 응답 형태는 A 와 확정 필요 */
+  /** 캔버스의 "툴 추가" 목록. A 의 툴 API(GET /api/v1/models)를 쓴다 — 응답 형태는 A 와 확정 필요 */
   listTools: async () => {
-    const res = await api('/tools');
+    const res = await api('/models');
     return (Array.isArray(res) ? res : res.items ?? []).map(normalizeTool);
   },
 
-  /** GET /api/pipelines?q=&sort=&page=&size= → { items, page, size, totalElements, totalPages } */
+  /** GET /api/v1/pipelines?q=&sort=&page=&size= → { items, page, size, totalElements, totalPages } */
   listPipelines: ({ q = '', sort = 'latest', page = 0, size = 12 } = {}) => {
     const qs = new URLSearchParams({ sort, page, size });
     if (q) qs.set('q', q);

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 // 담당 A. 이 패키지(com.aicompass.review) 안에서 controller/service/repository/entity 를 자유롭게 추가
 @RestController
-@RequestMapping("/api/review")
+@RequestMapping("/api/v1/reviews")
 public class ReviewController {
 
     @GetMapping
