@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>설문으로 추천 | AI Compass</title>
+  <link href="/assets/vendor/flexstart/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/assets/vendor/flexstart/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="/assets/vendor/flexstart/css/main.css" rel="stylesheet">
+  <link href="/assets/css/common.css" rel="stylesheet">
+  <link href="/assets/css/pipeline.css" rel="stylesheet">
+</head>
+<body class="pl-page">
+  <div id="header"></div>
+
+  <main>
+    <div class="pl-title">
+      <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <h1>AI 파이프라인 설계
+          <span id="mock-badge" class="badge text-bg-warning align-middle fs-6 fw-normal ms-2" title="백엔드 연동 전 임시 데이터로 동작 중이에요" hidden>목 데이터</span>
+        </h1>
+        <nav aria-label="현재 위치">
+          <ol class="pl-crumbs"><li><a href="/">Home</a></li><li aria-current="page">Pipeline</li></ol>
+        </nav>
+      </div>
+    </div>
+
+    <div class="container pb-5">
+      <nav class="pl-mode mb-4" aria-label="추천 방식">
+        <a href="/pages/chatbot/chat.html"><i class="bi bi-chat-dots" aria-hidden="true"></i>챗봇으로 추천</a>
+        <a class="active" href="/pages/chatbot/survey.html" aria-current="page"><i class="bi bi-ui-checks" aria-hidden="true"></i>설문으로 추천</a>
+      </nav>
+
+      <div class="row g-4 pl-panels">
+        <!-- 설문 -->
+        <div class="col-lg-5 d-flex">
+          <form id="survey-form" class="pl-panel" novalidate aria-labelledby="survey-h">
+            <div class="pl-panel-head"><h2 id="survey-h">설문 기반 추천</h2></div>
+            <div class="pl-panel-body">
+              <div id="survey-groups"></div>
+              <div class="pl-note">무료: 무료 티어 툴 / 3만원 이하: Pro급 ($20) / 3~15만원: Max급 ($100) / 15만원 이상: 최상위 플랜 ($200+)</div>
+              <div id="survey-msg" class="mb-3" role="status" aria-live="polite"></div>
+              <button id="recommend-btn" class="pl-btn pl-btn-green w-100 py-3 fs-5" type="submit">추천받기</button>
+              <p class="pl-caption">조건에 맞는 AI 툴을 즉시 조회합니다</p>
+            </div>
+          </form>
+        </div>
+
+        <!-- 추천 결과 -->
+        <div class="col-lg-7 d-flex">
+          <div class="pl-panel" role="region" aria-labelledby="result-h">
+            <div class="pl-panel-head"><h2 id="result-h">추천 모델</h2></div>
+            <div id="result" class="pl-panel-body" aria-live="polite"></div>
+            <div class="pl-panel-foot">
+              <div id="save-msg" class="me-auto small" role="status" aria-live="polite"></div>
+              <button id="save-btn" type="button" class="pl-btn pl-btn-primary" disabled>보관함에 저장</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="/assets/vendor/flexstart/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/common/layout.js"></script>
+  <script type="module" src="/assets/js/chatbot/survey.js"></script>
+</body>
+</html>
