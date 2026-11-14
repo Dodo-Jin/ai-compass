@@ -1,6 +1,7 @@
 // 공통 헤더/푸터 삽입. 모든 페이지에서 <div id="header">, <div id="footer"> + 이 스크립트 사용
+// 마이페이지는 <div id="mypage-profile">, <div id="mypage-tabs"> 슬롯도 같이 채운다(partials/mypage-*.html, 세 페이지 공용).
 // 삽입이 끝나면 window.layoutReady(Promise)가 이행된다. 헤더를 건드리는 코드는 `await window.layoutReady` 뒤에 실행할 것.
-const parts = ['header', 'footer'].map((id) =>
+const parts = ['header', 'footer', 'mypage-profile', 'mypage-tabs'].map((id) =>
   fetch(`/partials/${id}.html`)
     .then((r) => r.text())
     .then((html) => {
@@ -13,6 +14,13 @@ const parts = ['header', 'footer'].map((id) =>
 window.layoutReady = Promise.all(parts).then(() => {
   for (const link of document.querySelectorAll('#header [data-nav-match]')) {
     if (location.pathname.startsWith(link.dataset.navMatch)) {
+      link.classList.add('active');
+      link.setAttribute('aria-current', 'page');
+    }
+  }
+  // 마이페이지 탭: 현재 주소의 탭을 강조
+  for (const link of document.querySelectorAll('#mypage-tabs a')) {
+    if (link.pathname === location.pathname) {
       link.classList.add('active');
       link.setAttribute('aria-current', 'page');
     }
