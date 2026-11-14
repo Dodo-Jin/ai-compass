@@ -34,6 +34,7 @@ function readView() {
 }
 
 // ---------------------------------------------------------------- 프로필 (로그인 연동 전)
+await window.layoutReady; // 프로필 카드가 공용 partial 이라 삽입이 끝난 뒤에 채운다
 showMockUser();
 if (USE_MOCK) {
   $('mock-badge').hidden = false;

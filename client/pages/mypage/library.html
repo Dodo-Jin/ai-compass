@@ -29,28 +29,14 @@
       <div class="row g-4 align-items-start">
         <!-- 프로필 -->
         <aside class="col-lg-3" aria-label="내 정보 요약">
-          <div class="pl-profile">
-            <div class="pl-profile-avatar" aria-hidden="true"><i class="bi bi-person-fill"></i></div>
-            <h2 id="profile-name">회원</h2>
-            <p id="profile-email" class="email" hidden></p>
-            <ul class="pl-stats">
-              <li><span>저장한 파이프라인</span><strong id="stat-pipelines">–</strong></li>
-              <li><span>즐겨찾기 툴</span><strong id="stat-favorites">–</strong></li>
-              <li><span>작성한 리뷰</span><strong id="stat-reviews">–</strong></li>
-            </ul>
-          </div>
+          <div id="mypage-profile"></div>
         </aside>
 
         <!-- 보관함 -->
         <div class="col-lg-9">
           <div class="pl-panel">
             <div class="pl-panel-body px-4 px-xl-5 pt-3">
-              <!-- 탭 주소: 내 정보 / 즐겨찾기 비교 페이지는 각 담당자가 만들 때 맞춘다 -->
-              <ul class="pl-tabs">
-                <li><a href="/pages/mypage/index.html">내 정보</a></li>
-                <li><a href="/pages/mypage/favorites.html">즐겨찾기 비교</a></li>
-                <li><a class="active" href="/pages/mypage/library.html" aria-current="page">파이프라인 보관함</a></li>
-              </ul>
+              <div id="mypage-tabs"></div>
 
               <div class="pl-toolbar">
                 <div class="pl-search">
