@@ -31,8 +31,8 @@ function normalizeTool(t) {
 }
 
 const real = {
-  /** POST /api/v1/chat  { message } → { reply, blocks: [{ modelId, purpose, modelName, category, logoUrl }] } */
-  chat: (message) => api('/chat', { method: 'POST', body: { message } }),
+  /** POST /api/v1/pipelines/generate  { message } → { title, reply, blocks: [{ modelId, purpose, modelName, category, logoUrl }] } */
+  chat: (message) => api('/pipelines/generate', { method: 'POST', body: { message } }),
 
   /**
    * POST /api/v1/pipelines/recommend-by-survey  { job, usage, budget } → 툴 1개

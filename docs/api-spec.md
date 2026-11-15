@@ -30,7 +30,7 @@
 | DELETE | /api/v1/reviews/{reviewId} | 리뷰 삭제 (작성자만) | A |
 | GET | /api/v1/users/me/reviews | 내가 쓴 리뷰 목록 | A |
 | POST | /api/v1/pipelines/recommend-by-survey | 설문으로 AI 툴 1개 추천 (저장 안 함). 아래 메모 참고 | B |
-| POST | /api/v1/pipelines/generate | 챗봇 요청으로 파이프라인 결과 생성 (저장 안 함) | B |
+| POST | /api/v1/pipelines/generate | 챗봇 요청으로 파이프라인 결과 생성 (저장 안 함). 아래 메모 참고 | B |
 | POST | /api/v1/pipelines | 생성한 파이프라인 저장 (title, blocks) | B |
 | GET | /api/v1/pipelines | 파이프라인 보관함 목록 | B |
 | GET | /api/v1/pipelines/{pipelineId} | 파이프라인 상세 (blocks에 툴 이름 포함) | B |
@@ -50,3 +50,6 @@
 - `recommend-by-survey` 응답(200): `{ modelId, name, category, logoUrl, reason, priceText }`. 값 누락 400, 일치하는 툴 없음 404 (`{ message }`)
 - 예산 구간은 월 가격(달러, `price_min`/`price_max`) 기준: 무료 `price_min = 0`, 3만원 이하 `price_min <= 20`, 3~15만원 `20~100`과 겹침, 15만원 이상 `price_max >= 100`
 - 사용량은 `AI_Models.target_scales`(콤마 구분)에 포함되면 통과, 비어 있으면 전체 대상. 일치하는 툴이 없으면 직업 → 사용량 순으로 조건을 풀어 다시 찾음(예산은 유지)
+- `generate` 요청: `{ "message": "..." }` (최대 500자). 응답(200): `{ title, reply, blocks: [{ modelId, order, purpose, modelName, category, logoUrl }] }`. 요청에 맞는 툴이 없으면 `blocks`는 빈 배열
+- `generate` 오류(`{ message }`): 400 메시지 비어 있음/너무 김, 429 AI 요청 한도, 502 AI 오류·응답 해석 실패, 503 AI 키 미설정/등록된 툴 없음, 504 AI 응답 지연
+- 챗봇 AI는 OpenAI 호환 API이고 `.env`의 `AI_API_KEY`, `AI_BASE_URL`, `AI_MODEL`로 설정. 응답의 modelId는 `AI_Models`에 있는 것만 통과
