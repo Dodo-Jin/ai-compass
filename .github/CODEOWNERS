@@ -11,3 +11,6 @@
 /client/pages/trend/     @jungwukc
 /server/src/main/java/com/aicompass/trend/    @jungwukc
 /server/src/main/java/com/aicompass/favorite/ @jungwukc
+/client/pages/mypage/index.html     @byeongokchoi
+/client/pages/mypage/favorites.html @jungwukc
+/client/pages/mypage/library.html   @Dodo-Jin

@@ -1,12 +1,26 @@
-<nav class="navbar navbar-expand-lg border-bottom">
-  <div class="container">
-    <a class="navbar-brand" href="/">🧭 AI Compass</a>
-    <ul class="navbar-nav ms-auto flex-row gap-3">
-      <li class="nav-item"><a class="nav-link" href="/pages/directory/list.html">AI 툴</a></li>
-      <li class="nav-item"><a class="nav-link" href="/pages/chatbot/chat.html">챗봇</a></li>
-      <li class="nav-item"><a class="nav-link" href="/pages/trend/ranking.html">트렌드</a></li>
-      <li class="nav-item"><a class="nav-link" href="/pages/mypage/index.html">마이페이지</a></li>
-      <li class="nav-item"><a class="nav-link" href="/pages/auth/login.html">로그인</a></li>
-    </ul>
-  </div>
-</nav>
+<header class="pl-header">
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="pl-logo navbar-brand" href="/" aria-label="AI Compass 홈">AI <span>Compass</span></a>
+      <button class="navbar-toggler border-0 px-0" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav" aria-controls="main-nav" aria-expanded="false" aria-label="메뉴 열기">
+        <i class="bi bi-list fs-2" aria-hidden="true"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="main-nav">
+        <ul class="navbar-nav mx-auto gap-lg-4">
+          <li class="nav-item"><a class="nav-link" href="/pages/directory/list.html" data-nav-match="/pages/directory/">Directory</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/chatbot/chat.html" data-nav-match="/pages/chatbot/">Pipeline</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/trend/ranking.html" data-nav-match="/pages/trend/">Trend</a></li>
+          <li class="nav-item"><a class="nav-link" href="/pages/mypage/index.html" data-nav-match="/pages/mypage/">My Page</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-3 pl-header-tools">
+          <a class="pl-icon-link" href="/pages/directory/list.html" aria-label="AI 툴 검색"><i class="bi bi-search" aria-hidden="true"></i></a>
+          <!-- 로그인 연동 전에는 "로그인" 링크. 로그인되면 A 의 auth 코드가 #header-user 의 글자와 주소를 바꿔 준다 -->
+          <a class="pl-user" id="header-user" href="/pages/auth/login.html">
+            <span class="pl-user-avatar" aria-hidden="true"><i class="bi bi-person-fill"></i></span>
+            <span class="pl-user-name">로그인</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>

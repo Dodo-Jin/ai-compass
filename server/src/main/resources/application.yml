@@ -16,3 +16,9 @@ spring:
 
 server:
   port: ${PORT:3000}
+
+# 챗봇이 부르는 AI. OpenAI 호환(/chat/completions) API 면 .env 의 AI_* 만 바꿔서 교체한다
+ai:
+  base-url: ${AI_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai}
+  api-key: ${AI_API_KEY:}
+  model: ${AI_MODEL:gemini-flash-lite-latest}

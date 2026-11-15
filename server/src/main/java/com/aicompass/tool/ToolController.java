@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 // 담당 A. 이 패키지(com.aicompass.tool) 안에서 controller/service/repository/entity 를 자유롭게 추가
 @RestController
-@RequestMapping("/api/tool")
+@RequestMapping("/api/v1/models")
 public class ToolController {
 
     @GetMapping

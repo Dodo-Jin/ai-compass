@@ -1,1 +1,90 @@
-:root { --brand: #0d6efd; }
+/* FlexStart 와 같은 폰트(Nunito / Poppins / Roboto). @import 는 파일 맨 위에 있어야 한다 */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@500;600;700&family=Roboto:wght@400;500;700&display=swap');
+
+:root {
+  --brand: #0d6efd;
+  --pl-bg: #f5f8ff;                    /* 페이지 바탕 (FlexStart 의 연한 파랑 톤) */
+  --pl-line: rgba(1, 41, 112, 0.08);   /* 구분선·카드 테두리 */
+}
+
+/* ---------- 헤더 ---------- */
+.pl-header {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  background: #fff;
+  box-shadow: 0 2px 20px rgba(1, 41, 112, 0.06);
+}
+.pl-header .navbar { padding: 14px 0; }
+.pl-header .navbar-nav {
+  --bs-nav-link-color: var(--nav-color, #012970);
+  --bs-nav-link-hover-color: var(--accent-color, #4154f1);
+  --bs-navbar-active-color: var(--accent-color, #4154f1);
+  font-family: var(--nav-font, 'Poppins', sans-serif);
+  font-weight: 500;
+}
+.pl-header .nav-link { position: relative; padding: 8px 2px; }
+.pl-header .nav-link.active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--accent-color, #4154f1);
+}
+
+.pl-logo {
+  font-family: var(--nav-font, 'Poppins', sans-serif);
+  font-weight: 700;
+  font-size: 28px;
+  letter-spacing: -0.5px;
+  color: var(--heading-color, #012970);
+  text-decoration: none;
+}
+.pl-logo span { color: var(--accent-color, #4154f1); }
+.pl-logo:hover { color: var(--heading-color, #012970); }
+
+.pl-icon-link { color: var(--heading-color, #012970); font-size: 20px; padding: 6px; line-height: 1; }
+.pl-icon-link:hover { color: var(--accent-color, #4154f1); }
+
+.pl-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 18px 5px 5px;
+  border-radius: 999px;
+  background: #f4f6ff;
+  border: 1px solid rgba(65, 84, 241, 0.12);
+  color: var(--heading-color, #012970);
+  font-family: var(--heading-font, 'Nunito', sans-serif);
+  font-weight: 700;
+}
+.pl-user:hover { color: var(--accent-color, #4154f1); }
+.pl-user-avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent-color, #4154f1);
+  color: #fff;
+}
+
+/* ---------- 푸터 ---------- */
+.pl-footer {
+  background: var(--pl-bg);
+  border-top: 1px solid var(--pl-line);
+  padding: 40px 0;
+}
+.pl-footer-nav a {
+  margin-left: 24px;
+  font-family: var(--nav-font, 'Poppins', sans-serif);
+  color: var(--heading-color, #012970);
+}
+.pl-footer-nav a:hover { color: var(--accent-color, #4154f1); }
+
+@media (max-width: 991px) {
+  .pl-header .navbar-collapse { padding: 12px 0 8px; }
+  .pl-header .pl-header-tools { margin-top: 12px; }
+}
