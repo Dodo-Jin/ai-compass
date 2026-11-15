@@ -5,6 +5,7 @@
 - Base URL: `/api/v1`, 요청/응답은 모두 JSON(UTF-8). 컨트롤러 `@RequestMapping`도 `/api/v1/...`로 시작한다
 - 새 API는 이 문서에 먼저 쓰고 PR에 같이 올린다
 - 인증: 세션 쿠키(`JSESSIONID`). 로그인이 필요한 API는 비로그인 시 401 JSON을 반환
+- 세션 키: `userId` (값은 `Users.user_id`, Integer). 서버 코드는 `SessionKeys.USER_ID` 상수를 쓴다
 - 네이밍: URL은 소문자 복수형, JSON 필드는 camelCase (`model_id` → `modelId`)
 - 목록 API는 `page`(1부터), `size`(기본 12, 최대 50)
 - 성공 응답: `{ "success": true, "data": { ... } }`
