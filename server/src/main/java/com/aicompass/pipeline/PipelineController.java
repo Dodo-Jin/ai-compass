@@ -14,9 +14,23 @@ import org.springframework.web.bind.annotation.RestController;
 public class PipelineController {
 
     private final SurveyRecommendService survey;
+    private final ChatPipelineService chat;
 
-    public PipelineController(SurveyRecommendService survey) {
+    public PipelineController(SurveyRecommendService survey, ChatPipelineService chat) {
         this.survey = survey;
+        this.chat = chat;
+    }
+
+    public record GenerateRequest(String message) {}
+
+    /** 챗봇. 요청 문장으로 파이프라인(툴 조합)을 만들어 돌려준다(저장 안 함). 오류는 { message } */
+    @PostMapping("/generate")
+    public ResponseEntity<?> generate(@RequestBody GenerateRequest req) {
+        try {
+            return ResponseEntity.ok(chat.generate(req.message()));
+        } catch (ChatPipelineService.ChatException e) {
+            return ResponseEntity.status(e.status).body(Map.of("message", e.getMessage()));
+        }
     }
 
     @GetMapping
