@@ -13,56 +13,56 @@ import java.time.LocalDateTime;
 @Table(name = "Users")
 public class User {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "user_id")
-  private Integer userId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
+    private Integer userId;
 
-  @Column(name = "username", nullable = false, length = 50, unique = true)
-  private String username;
+    @Column(name = "username", nullable = false, length = 50, unique = true)
+    private String username;
 
-  @Column(name = "email", nullable = false, length = 100, unique = true)
-  private String email;
+    @Column(name = "email", nullable = false, length = 100, unique = true)
+    private String email;
 
-  @Column(name = "password", nullable = false, length = 255)
-  private String password;
+    @Column(name = "password", nullable = false, length = 255)
+    private String password;
 
-  @Column(name = "created_at", updatable = false)
-  private LocalDateTime createdAt;
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 
-  protected User() {
-  }
-
-  public User(String username, String email, String password) {
-    this.username = username;
-    this.email = email;
-    this.password = password;
-  }
-
-  @PrePersist
-  protected void onCreate() {
-    if (this.createdAt == null) {
-      this.createdAt = LocalDateTime.now();
+    protected User() {
     }
-  }
 
-  public Integer getUserId() {
-    return userId;
-  }
+    public User(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
 
-  public String getUsername() {
-    return username;
-  }
+    @PrePersist
+    protected void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
+    }
 
-  public String getEmail() {
-    return email;
-  }
+    public Integer getUserId() {
+        return userId;
+    }
 
-  public String getPassword() {
-    return password;
-  }
+    public String getUsername() {
+        return username;
+    }
 
-  public LocalDateTime getCreatedAt() {
-    return createdAt;
-  }
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 }
