@@ -1,6 +1,6 @@
 // 트렌드 페이지 데이터 계층 (담당 C)
 // 지금은 mock/ 폴더의 JSON을 읽고, 서버 API가 완성되면 USE_MOCK 만 false 로 바꾸면 된다.
-// 응답 모양은 docs/api-spec.md 공통 규칙({ success, data })을 그대로 따른다.
+// 응답 모양은 docs/api-spec.md 공통 규칙({ success, data })을 따른다. api() 가 /api/v1 을 붙이고 data 만 돌려준다.
 import { api } from '../common/api.js';
 
 const USE_MOCK = true;
@@ -18,7 +18,7 @@ export async function fetchRankings({ period = 'realtime', category = '전체', 
   if (!USE_MOCK) {
     const qs = new URLSearchParams({ period, page, size });
     if (category !== '전체') qs.set('category', category);
-    return (await api(`/v1/trends/rankings?${qs}`)).data;
+    return api(`/trends/rankings?${qs}`);
   }
 
   const { data } = await getJson(`${MOCK_DIR}/rankings.json`);
@@ -40,7 +40,7 @@ export async function fetchRankings({ period = 'realtime', category = '전체', 
 
 /** 최신 AI 동향 + 급상승 키워드 */
 export async function fetchNews() {
-  if (!USE_MOCK) return (await api('/v1/trends/news')).data;
+  if (!USE_MOCK) return api('/trends/news');
   return (await getJson(`${MOCK_DIR}/news.json`)).data;
 }
 
@@ -53,8 +53,8 @@ const favoriteState = new Map();
  */
 export async function setFavorite(modelId, on) {
   if (!USE_MOCK) {
-    if (on) await api('/v1/favorites', { method: 'POST', body: { modelId } });
-    else await api(`/v1/favorites/${modelId}`, { method: 'DELETE' });
+    if (on) await api('/favorites', { method: 'POST', body: { modelId } });
+    else await api(`/favorites/${modelId}`, { method: 'DELETE' });
     return;
   }
   await new Promise((r) => setTimeout(r, 150));

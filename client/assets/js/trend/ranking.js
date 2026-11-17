@@ -168,7 +168,7 @@ function bindEvents() {
     } catch (err) {
       console.error(err);
       setFavButton(btn, name, !next);
-      showToast('즐겨찾기는 로그인 후 사용할 수 있어요');
+      showToast(err.status === 401 ? '즐겨찾기는 로그인 후 사용할 수 있어요' : '즐겨찾기를 저장하지 못했어요. 잠시 후 다시 시도해 주세요');
     } finally {
       btn.disabled = false;
     }
