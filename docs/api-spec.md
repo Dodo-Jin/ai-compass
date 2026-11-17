@@ -11,6 +11,9 @@
 - 성공 응답: `{ "success": true, "data": { ... } }`
 - 실패 응답: `{ "success": false, "error": { "code": "MODEL_NOT_FOUND", "message": "..." } }`
 - 상태 코드: 200 조회/수정, 201 생성, 204 삭제, 400 값 오류, 401 로그인 필요, 403 권한 없음, 404 없음, 409 중복
+- 서버는 `com.aicompass.common` 의 `ApiResponse.ok(data)` 로 응답하고, 실패는 `ApiException` 을 던진다 (전역 예외 처리가 실패 형식으로 바꿈)
+- 화면은 `api()` (`client/assets/js/common/api.js`) 로 호출한다. `/api/v1` 은 자동으로 붙고 `data` 만 돌려준다
+- 공통 에러 코드: `INVALID_REQUEST`(400 값·형식 오류), `LOGIN_REQUIRED`(401), `NOT_FOUND`(404 없는 경로), `METHOD_NOT_ALLOWED`(405), `INTERNAL_ERROR`(500). 기능별 코드(`MODEL_NOT_FOUND` 등)는 각 API 설명에 적는다
 
 ## 목록
 
