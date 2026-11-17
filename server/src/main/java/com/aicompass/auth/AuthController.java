@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AuthController {
 
-    public static final String SESSION_USER_ID = "USER_ID";
+    public static final String SESSION_USER_ID = "userId";
 
     private final AuthService authService;
 
@@ -70,7 +70,7 @@ public class AuthController {
 
     @GetMapping("/api/v1/users/me")
     public ResponseEntity<Map<String, Object>> getMe(HttpSession session) {
-        Integer userId = (Integer) session.getAttribute(SESSION_USER_ID);
+        Integer userId = extractUserId(session.getAttribute(SESSION_USER_ID));
         Map<String, Object> user = authService.getMe(userId);
         return ResponseEntity.ok(successResponse(user));
     }
@@ -86,6 +86,20 @@ public class AuthController {
         response.put("error", errorBody);
 
         return ResponseEntity.status(ex.getStatus()).body(response);
+    }
+
+    private Integer extractUserId(Object rawUserId) {
+        if (rawUserId instanceof Number number) {
+            return number.intValue();
+        }
+        if (rawUserId instanceof String str) {
+            try {
+                return Integer.parseInt(str);
+            } catch (NumberFormatException ignored) {
+                return null;
+            }
+        }
+        return null;
     }
 
     private Map<String, Object> successResponse(Object data) {
