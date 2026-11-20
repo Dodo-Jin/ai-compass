@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>회원가입 | AI Compass</title>
+  <link href="/assets/vendor/flexstart/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/assets/vendor/flexstart/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="/assets/vendor/flexstart/css/main.css" rel="stylesheet">
+  <link href="/assets/css/common.css" rel="stylesheet">
+  <style>
+    body {
+      background: var(--pl-bg, #f5f8ff);
+    }
+    .auth-wrap {
+      min-height: calc(100vh - 210px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 16px;
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 480px;
+      background: #fff;
+      border: 1px solid var(--pl-line, rgba(1, 41, 112, 0.08));
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(1, 41, 112, 0.06);
+      padding: 36px 32px;
+    }
+    .auth-title {
+      font-family: var(--heading-font, 'Nunito', sans-serif);
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--heading-color, #012970);
+      margin-bottom: 6px;
+    }
+    .auth-sub {
+      color: #6c757d;
+      font-size: 0.92rem;
+      margin-bottom: 24px;
+    }
+    .auth-submit {
+      width: 100%;
+      padding: 11px 16px;
+      font-family: var(--nav-font, 'Poppins', sans-serif);
+      font-weight: 600;
+      border-radius: 10px;
+      background: var(--accent-color, #4154f1);
+      border-color: var(--accent-color, #4154f1);
+    }
+    .auth-submit:hover {
+      background: #3345d6;
+      border-color: #3345d6;
+    }
+    .auth-link {
+      color: var(--accent-color, #4154f1);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .auth-link:hover {
+      text-decoration: underline;
+    }
+    .check-msg {
+      font-size: 0.82rem;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div id="header"></div>
+
+  <main class="auth-wrap">
+    <div class="auth-card">
+      <div class="text-center mb-3">
+        <span class="badge rounded-pill px-3 py-2 mb-2" style="background:#f4f6ff;color:var(--accent-color,#4154f1);border:1px solid rgba(65,84,241,0.14);">AI Compass</span>
+        <h1 class="auth-title">회원가입</h1>
+        <p class="auth-sub mb-0">간단한 정보만 입력하고 나만의 AI 툴을 찾아보세요.</p>
+      </div>
+
+      <div id="auth-alert" class="alert d-none py-2 small" role="alert"></div>
+
+      <form id="signup-form" novalidate>
+        <div class="mb-3">
+          <label for="email" class="form-label fw-semibold small">이메일</label>
+          <div class="input-group">
+            <input type="email" class="form-control" id="email" placeholder="name@example.com" autocomplete="email" required>
+            <button type="button" class="btn btn-outline-secondary btn-sm px-3" id="check-email-btn">중복 확인</button>
+          </div>
+          <div id="email-msg" class="check-msg text-muted"></div>
+        </div>
+
+        <div class="mb-3">
+          <label for="username" class="form-label fw-semibold small">사용자 이름 (닉네임)</label>
+          <div class="input-group">
+            <input type="text" class="form-control" id="username" maxlength="50" placeholder="사용할 이름 입력" autocomplete="username" required>
+            <button type="button" class="btn btn-outline-secondary btn-sm px-3" id="check-username-btn">중복 확인</button>
+          </div>
+          <div id="username-msg" class="check-msg text-muted"></div>
+        </div>
+
+        <div class="mb-3">
+          <label for="password" class="form-label fw-semibold small">비밀번호</label>
+          <input type="password" class="form-control" id="password" placeholder="4자 이상 입력해 주세요" autocomplete="new-password" required>
+        </div>
+
+        <div class="mb-4">
+          <label for="password-confirm" class="form-label fw-semibold small">비밀번호 확인</label>
+          <input type="password" class="form-control" id="password-confirm" placeholder="비밀번호를 한 번 더 입력해 주세요" autocomplete="new-password" required>
+        </div>
+
+        <button type="submit" id="submit-btn" class="btn btn-primary auth-submit">가입하기</button>
+      </form>
+
+      <div class="text-center mt-4 pt-3 small text-muted" style="border-top:1px solid var(--pl-line, rgba(1,41,112,0.08));">
+        이미 계정이 있으신가요?
+        <a href="/pages/auth/login.html" class="auth-link ms-1">로그인</a>
+      </div>
+    </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="/assets/vendor/flexstart/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/common/layout.js"></script>
+  <script>
+    (async function () {
+      const form = document.getElementById('signup-form');
+      const emailInput = document.getElementById('email');
+      const usernameInput = document.getElementById('username');
+      const passwordInput = document.getElementById('password');
+      const passwordConfirmInput = document.getElementById('password-confirm');
+      const emailMsg = document.getElementById('email-msg');
+      const usernameMsg = document.getElementById('username-msg');
+      const checkEmailBtn = document.getElementById('check-email-btn');
+      const checkUsernameBtn = document.getElementById('check-username-btn');
+      const submitBtn = document.getElementById('submit-btn');
+      const alertBox = document.getElementById('auth-alert');
+
+      function showAlert(message, type = 'danger') {
+        alertBox.className = `alert alert-${type} py-2 small`;
+        alertBox.textContent = message;
+      }
+
+      // 헤더 로그인 상태 동기화 (이미 로그인되어 있으면 마이페이지로 안내)
+      try {
+        await window.layoutReady;
+        const meRes = await fetch('/api/v1/users/me', { credentials: 'same-origin' });
+        if (meRes.ok) {
+          const meJson = await meRes.json();
+          if (meJson.success && meJson.data) {
+            const headerUser = document.getElementById('header-user');
+            if (headerUser) {
+              headerUser.href = '/pages/mypage/index.html';
+              const nameEl = headerUser.querySelector('.pl-user-name');
+              if (nameEl) nameEl.textContent = meJson.data.username;
+            }
+          }
+        }
+      } catch (_) {}
+
+      emailInput.addEventListener('input', () => {
+        emailMsg.className = 'check-msg text-muted';
+        emailMsg.textContent = '';
+      });
+
+      usernameInput.addEventListener('input', () => {
+        usernameMsg.className = 'check-msg text-muted';
+        usernameMsg.textContent = '';
+      });
+
+      checkEmailBtn.addEventListener('click', async () => {
+        const email = emailInput.value.trim();
+        if (!email || !email.includes('@')) {
+          emailMsg.className = 'check-msg text-danger';
+          emailMsg.textContent = '올바른 이메일 형식을 입력해 주세요.';
+          return;
+        }
+        try {
+          const res = await fetch(`/api/v1/auth/check?email=${encodeURIComponent(email)}`);
+          const json = await res.json();
+          if (res.ok && json.success && json.data.available) {
+            emailMsg.className = 'check-msg text-success';
+            emailMsg.textContent = '사용 가능한 이메일입니다.';
+          } else {
+            emailMsg.className = 'check-msg text-danger';
+            emailMsg.textContent = '이미 사용 중인 이메일입니다.';
+          }
+        } catch (_) {
+          emailMsg.className = 'check-msg text-danger';
+          emailMsg.textContent = '중복 확인 중 오류가 발생했습니다.';
+        }
+      });
+
+      checkUsernameBtn.addEventListener('click', async () => {
+        const username = usernameInput.value.trim();
+        if (!username) {
+          usernameMsg.className = 'check-msg text-danger';
+          usernameMsg.textContent = '사용자 이름을 입력해 주세요.';
+          return;
+        }
+        try {
+          const res = await fetch(`/api/v1/auth/check?username=${encodeURIComponent(username)}`);
+          const json = await res.json();
+          if (res.ok && json.success && json.data.available) {
+            usernameMsg.className = 'check-msg text-success';
+            usernameMsg.textContent = '사용 가능한 이름입니다.';
+          } else {
+            usernameMsg.className = 'check-msg text-danger';
+            usernameMsg.textContent = '이미 사용 중인 이름입니다.';
+          }
+        } catch (_) {
+          usernameMsg.className = 'check-msg text-danger';
+          usernameMsg.textContent = '중복 확인 중 오류가 발생했습니다.';
+        }
+      });
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        alertBox.className = 'alert d-none py-2 small';
+
+        const email = emailInput.value.trim();
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value;
+        const passwordConfirm = passwordConfirmInput.value;
+
+        if (!email || !email.includes('@')) {
+          showAlert('유효한 이메일을 입력해 주세요.');
+          return;
+        }
+        if (!username) {
+          showAlert('사용자 이름을 입력해 주세요.');
+          return;
+        }
+        if (password.length < 4) {
+          showAlert('비밀번호는 4자 이상 입력해 주세요.');
+          return;
+        }
+        if (password !== passwordConfirm) {
+          showAlert('비밀번호 확인이 일치하지 않습니다.');
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = '가입 처리 중...';
+
+        try {
+          const res = await fetch('/api/v1/auth/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password, username })
+          });
+          const json = await res.json().catch(() => ({}));
+
+          if (!res.ok || !json.success) {
+            showAlert(json.error?.message || '회원가입에 실패했습니다.');
+            return;
+          }
+
+          showAlert('회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.', 'success');
+          setTimeout(() => {
+            location.href = '/pages/auth/login.html';
+          }, 900);
+        } catch (_) {
+          showAlert('서버와 통신할 수 없습니다. 잠시 후 다시 시도해 주세요.');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = '가입하기';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

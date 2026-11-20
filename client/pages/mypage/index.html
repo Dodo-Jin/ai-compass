@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>내 정보 | AI Compass</title>
+  <link href="/assets/vendor/flexstart/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/assets/vendor/flexstart/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="/assets/vendor/flexstart/css/main.css" rel="stylesheet">
+  <link href="/assets/css/common.css" rel="stylesheet">
+  <link href="/assets/css/pipeline.css" rel="stylesheet">
+  <style>
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--pl-line, rgba(1, 41, 112, 0.08));
+      font-size: 0.94rem;
+    }
+    .info-row:last-child {
+      border-bottom: none;
+    }
+    .my-review-card {
+      border: 1px solid var(--pl-line, rgba(1, 41, 112, 0.08));
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      background: #fff;
+    }
+    .star-btn {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      color: #dee2e6;
+      padding: 0 2px;
+      cursor: pointer;
+    }
+    .star-btn.active {
+      color: #f59e0b;
+    }
+  </style>
+</head>
+<body class="pl-page">
+  <div id="header"></div>
+
+  <main>
+    <div class="pl-title">
+      <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <h1>마이페이지</h1>
+        <nav aria-label="현재 위치">
+          <ol class="pl-crumbs"><li><a href="/">Home</a></li><li aria-current="page">My Page</li></ol>
+        </nav>
+      </div>
+    </div>
+
+    <div class="container pb-5">
+      <div class="row g-4 align-items-start">
+        <!-- 좌측 공용 프로필 -->
+        <aside class="col-lg-3" aria-label="내 정보 요약">
+          <div id="mypage-profile"></div>
+        </aside>
+
+        <!-- 우측 본문 -->
+        <div class="col-lg-9">
+          <div class="pl-panel">
+            <div class="pl-panel-body px-4 px-xl-5 pt-3">
+              <div id="mypage-tabs"></div>
+
+              <!-- 비로그인 안내 -->
+              <div id="guest-box" class="text-center py-5 d-none">
+                <i class="bi bi-lock fs-1 text-muted d-block mb-3"></i>
+                <h2 class="h5 fw-bold mb-2">로그인이 필요합니다</h2>
+                <p class="text-muted small mb-4">로그인하시면 내 계정 정보와 작성한 리뷰 목록을 확인할 수 있습니다.</p>
+                <a href="/pages/auth/login.html?redirect=/pages/mypage/index.html" class="pl-btn pl-btn-primary">로그인 하러 가기</a>
+              </div>
+
+              <!-- 로그인 회원 콘텐츠 -->
+              <div id="member-box" class="d-none">
+                <!-- 기본 정보 -->
+                <section class="mb-5">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="h5 fw-bold mb-0" style="font-family:var(--heading-font,'Nunito',sans-serif);color:var(--heading-color,#012970);">내 계정 정보</h2>
+                    <button type="button" id="logout-btn" class="pl-btn pl-btn-sm pl-btn-danger">
+                      <i class="bi bi-box-arrow-right me-1"></i>로그아웃
+                    </button>
+                  </div>
+                  <div class="rounded-3 px-3 py-1" style="background:var(--pl-bg,#f5f8ff);border:1px solid var(--pl-line,rgba(1,41,112,0.08));">
+                    <div class="info-row">
+                      <span class="text-muted">사용자 이름</span>
+                      <strong id="me-username">-</strong>
+                    </div>
+                    <div class="info-row">
+                      <span class="text-muted">이메일</span>
+                      <strong id="me-email">-</strong>
+                    </div>
+                    <div class="info-row">
+                      <span class="text-muted">가입일</span>
+                      <span id="me-created-at">-</span>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- 내가 쓴 리뷰 목록 -->
+                <section>
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="h5 fw-bold mb-0" style="font-family:var(--heading-font,'Nunito',sans-serif);color:var(--heading-color,#012970);">
+                      내가 쓴 리뷰 <span id="my-review-total" class="badge text-bg-light border text-primary ms-1">0</span>
+                    </h2>
+                    <a href="/pages/directory/list.html" class="small text-decoration-none" style="color:var(--accent-color,#4154f1);">AI 툴 둘러보기 →</a>
+                  </div>
+
+                  <div id="my-review-list"></div>
+                  <nav aria-label="리뷰 페이지 이동" class="mt-3">
+                    <ul id="my-review-pager" class="pl-pager"></ul>
+                  </nav>
+                </section>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 리뷰 수정 모달 -->
+  <div class="modal fade" id="edit-review-modal" tabindex="-1" aria-labelledby="edit-review-title">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title fs-5" id="edit-review-title">리뷰 수정</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold d-block">별점</label>
+            <div id="modal-star-picker">
+              <button type="button" class="star-btn" data-val="1"><i class="bi bi-star-fill"></i></button>
+              <button type="button" class="star-btn" data-val="2"><i class="bi bi-star-fill"></i></button>
+              <button type="button" class="star-btn" data-val="3"><i class="bi bi-star-fill"></i></button>
+              <button type="button" class="star-btn" data-val="4"><i class="bi bi-star-fill"></i></button>
+              <button type="button" class="star-btn" data-val="5"><i class="bi bi-star-fill"></i></button>
+            </div>
+          </div>
+          <div class="mb-2">
+            <label for="modal-review-content" class="form-label small fw-semibold">리뷰 내용 (최대 200자)</label>
+            <textarea id="modal-review-content" class="form-control" rows="3" maxlength="200"></textarea>
+          </div>
+          <div id="modal-edit-error" class="alert alert-danger py-2 small d-none mb-0"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="pl-btn pl-btn-sm" data-bs-dismiss="modal">취소</button>
+          <button type="button" id="modal-save-btn" class="pl-btn pl-btn-sm pl-btn-primary">저장</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer"></div>
+
+  <script src="/assets/vendor/flexstart/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/common/layout.js"></script>
+  <script>
+    (async function () {
+      const guestBox = document.getElementById('guest-box');
+      const memberBox = document.getElementById('member-box');
+      const myReviewList = document.getElementById('my-review-list');
+      const myReviewPager = document.getElementById('my-review-pager');
+      const myReviewTotal = document.getElementById('my-review-total');
+      const logoutBtn = document.getElementById('logout-btn');
+
+      const editModalEl = document.getElementById('edit-review-modal');
+      const editModal = new bootstrap.Modal(editModalEl);
+      const modalContent = document.getElementById('modal-review-content');
+      const modalError = document.getElementById('modal-edit-error');
+      const modalSaveBtn = document.getElementById('modal-save-btn');
+      const modalStarBtns = document.querySelectorAll('#modal-star-picker .star-btn');
+
+      const reviewsById = new Map();
+      let currentPage = 1;
+      let editingReviewId = null;
+      let editingRating = 5;
+
+      function escapeHtml(str) {
+        return String(str ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function formatDate(iso) {
+        if (!iso) return '-';
+        return iso.replace('T', ' ').slice(0, 16);
+      }
+
+      function setModalRating(val) {
+        editingRating = val;
+        modalStarBtns.forEach(btn => {
+          btn.classList.toggle('active', Number(btn.dataset.val) <= val);
+        });
+      }
+
+      modalStarBtns.forEach(btn => {
+        btn.addEventListener('click', () => setModalRating(Number(btn.dataset.val)));
+      });
+
+      await window.layoutReady;
+
+      let me = null;
+      try {
+        const res = await fetch('/api/v1/users/me', { credentials: 'same-origin' });
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            me = json.data;
+          }
+        }
+      } catch (_) {}
+
+      if (!me) {
+        guestBox.classList.remove('d-none');
+        return;
+      }
+
+      const headerUser = document.getElementById('header-user');
+      if (headerUser) {
+        headerUser.href = '/pages/mypage/index.html';
+        const nameEl = headerUser.querySelector('.pl-user-name');
+        if (nameEl) nameEl.textContent = me.username;
+      }
+
+      const profileName = document.getElementById('profile-name');
+      const profileEmail = document.getElementById('profile-email');
+      if (profileName) profileName.textContent = me.username;
+      if (profileEmail) {
+        profileEmail.textContent = me.email;
+        profileEmail.hidden = false;
+      }
+
+      document.getElementById('me-username').textContent = me.username;
+      document.getElementById('me-email').textContent = me.email;
+      document.getElementById('me-created-at').textContent = formatDate(me.createdAt);
+      memberBox.classList.remove('d-none');
+
+      // B/C 담당 통계(파이프라인·즐겨찾기)는 API가 열려 있으면 자동으로 숫자 표시
+      fetch('/api/v1/pipelines', { credentials: 'same-origin' })
+        .then(r => r.ok ? r.json() : null)
+        .then(j => {
+          const el = document.getElementById('stat-pipelines');
+          if (!el || !j || !j.success) return;
+          const count = j.data?.totalElements ?? (Array.isArray(j.data?.items) ? j.data.items.length : (Array.isArray(j.data) ? j.data.length : null));
+          if (count !== null) el.textContent = String(count);
+        }).catch(() => {});
+
+      fetch('/api/v1/favorites', { credentials: 'same-origin' })
+        .then(r => r.ok ? r.json() : null)
+        .then(j => {
+          const el = document.getElementById('stat-favorites');
+          if (!el || !j || !j.success) return;
+          const count = j.data?.totalElements ?? (Array.isArray(j.data?.items) ? j.data.items.length : (Array.isArray(j.data) ? j.data.length : null));
+          if (count !== null) el.textContent = String(count);
+        }).catch(() => {});
+
+      async function loadMyReviews() {
+        try {
+          const res = await fetch(`/api/v1/users/me/reviews?page=${currentPage}&size=10`, { credentials: 'same-origin' });
+          const json = await res.json();
+          if (!res.ok || !json.success) return;
+
+          const { items, totalElements, totalPages, page } = json.data;
+          myReviewTotal.textContent = totalElements;
+          const statReviews = document.getElementById('stat-reviews');
+          if (statReviews) statReviews.textContent = String(totalElements);
+
+          reviewsById.clear();
+
+          if (!items || items.length === 0) {
+            myReviewList.innerHTML = `
+              <div class="text-center py-4 border rounded-3 text-muted small">
+                아직 작성한 리뷰가 없습니다.
+              </div>`;
+            myReviewPager.innerHTML = '';
+            return;
+          }
+
+          items.forEach(r => reviewsById.set(r.reviewId, r));
+
+          myReviewList.innerHTML = items.map(r => {
+            const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+            return `
+              <div class="my-review-card">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                  <div>
+                    <a href="/pages/directory/detail.html?id=${r.modelId}" class="fw-bold text-decoration-none me-2" style="color:var(--heading-color,#012970);">
+                      ${escapeHtml(r.modelName || `AI 툴 #${r.modelId}`)}
+                    </a>
+                    <span class="text-warning">${stars}</span>
+                  </div>
+                  <span class="small text-muted">${formatDate(r.createdAt)}</span>
+                </div>
+                <p class="small mb-3 text-dark" style="white-space:pre-line;">${escapeHtml(r.content)}</p>
+                <div class="d-flex justify-content-end gap-2">
+                  <button type="button" class="pl-btn pl-btn-sm edit-review-btn" data-id="${r.reviewId}">수정</button>
+                  <button type="button" class="pl-btn pl-btn-sm pl-btn-danger delete-review-btn" data-id="${r.reviewId}">삭제</button>
+                </div>
+              </div>`;
+          }).join('');
+
+          myReviewList.querySelectorAll('.edit-review-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const review = reviewsById.get(Number(btn.dataset.id));
+              if (!review) return;
+              editingReviewId = review.reviewId;
+              setModalRating(review.rating);
+              modalContent.value = review.content;
+              modalError.classList.add('d-none');
+              editModal.show();
+            });
+          });
+
+          myReviewList.querySelectorAll('.delete-review-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              if (!confirm('이 리뷰를 삭제할까요?')) return;
+              const reviewId = Number(btn.dataset.id);
+              const delRes = await fetch(`/api/v1/reviews/${reviewId}`, {
+                method: 'DELETE',
+                credentials: 'same-origin'
+              });
+              if (delRes.ok) {
+                await loadMyReviews();
+              } else {
+                alert('리뷰 삭제에 실패했습니다.');
+              }
+            });
+          });
+
+          if (totalPages > 1) {
+            let html = '';
+            for (let i = 1; i <= totalPages; i++) {
+              html += `<li><button type="button" class="${i === page ? 'active' : ''}" data-page="${i}">${i}</button></li>`;
+            }
+            myReviewPager.innerHTML = html;
+            myReviewPager.querySelectorAll('button[data-page]').forEach(btn => {
+              btn.addEventListener('click', () => {
+                currentPage = Number(btn.dataset.page);
+                loadMyReviews();
+              });
+            });
+          } else {
+            myReviewPager.innerHTML = '';
+          }
+        } catch (_) {}
+      }
+
+      modalSaveBtn.addEventListener('click', async () => {
+        if (!editingReviewId) return;
+        const content = modalContent.value.trim();
+        if (!content || content.length > 200) {
+          modalError.textContent = '리뷰 내용은 1자 이상 200자 이내여야 합니다.';
+          modalError.classList.remove('d-none');
+          return;
+        }
+        modalSaveBtn.disabled = true;
+        try {
+          const res = await fetch(`/api/v1/reviews/${editingReviewId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({ rating: editingRating, content })
+          });
+          const json = await res.json().catch(() => ({}));
+          if (!res.ok || !json.success) {
+            modalError.textContent = json.error?.message || '수정에 실패했습니다.';
+            modalError.classList.remove('d-none');
+            return;
+          }
+          editModal.hide();
+          await loadMyReviews();
+        } catch (_) {
+          modalError.textContent = '서버와 통신 중 오류가 발생했습니다.';
+          modalError.classList.remove('d-none');
+        } finally {
+          modalSaveBtn.disabled = false;
+        }
+      });
+
+      logoutBtn.addEventListener('click', async () => {
+        if (!confirm('로그아웃 하시겠습니까?')) return;
+        await fetch('/api/v1/auth/logout', { method: 'POST', credentials: 'same-origin' });
+        location.href = '/pages/auth/login.html';
+      });
+
+      await loadMyReviews();
+    })();
+  </script>
+</body>
+</html>

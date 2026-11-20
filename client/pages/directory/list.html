@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI 디렉토리 | AI Compass</title>
+  <link href="/assets/vendor/flexstart/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/assets/vendor/flexstart/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="/assets/vendor/flexstart/css/main.css" rel="stylesheet">
+  <link href="/assets/css/common.css" rel="stylesheet">
+  <style>
+    body {
+      background: var(--pl-bg, #f5f8ff);
+    }
+    .dir-title {
+      padding: 36px 0 24px;
+    }
+    .dir-title h1 {
+      font-family: var(--heading-font, 'Nunito', sans-serif);
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--heading-color, #012970);
+      margin: 0;
+    }
+    .dir-crumbs {
+      display: flex;
+      gap: 8px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-size: 0.88rem;
+      color: #6c757d;
+    }
+    .dir-crumbs li + li::before {
+      content: '/';
+      margin-right: 8px;
+      color: #adb5bd;
+    }
+    .dir-crumbs a {
+      color: var(--accent-color, #4154f1);
+      text-decoration: none;
+    }
+    .dir-filter-box {
+      background: #fff;
+      border: 1px solid var(--pl-line, rgba(1, 41, 112, 0.08));
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 6px 20px rgba(1, 41, 112, 0.05);
+    }
+    .dir-cat-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .dir-cat-btn {
+      border: 1px solid var(--pl-line, rgba(1, 41, 112, 0.14));
+      background: #fff;
+      color: var(--heading-color, #012970);
+      border-radius: 999px;
+      padding: 6px 15px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.15s ease;
+    }
+    .dir-cat-btn:hover {
+      border-color: var(--accent-color, #4154f1);
+      color: var(--accent-color, #4154f1);
+    }
+    .dir-cat-btn.active {
+      background: var(--accent-color, #4154f1);
+      border-color: var(--accent-color, #4154f1);
+      color: #fff;
+    }
+    .tool-card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background: #fff;
+      border: 1px solid var(--pl-line, rgba(1, 41, 112, 0.08));
+      border-radius: 14px;
+      padding: 20px;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+    .tool-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(65, 84, 241, 0.3);
+      box-shadow: 0 10px 24px rgba(1, 41, 112, 0.08);
+      color: inherit;
+    }
+    .tool-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      object-fit: contain;
+      background: var(--pl-bg, #f5f8ff);
+      border: 1px solid var(--pl-line, rgba(1, 41, 112, 0.08));
+      padding: 6px;
+      flex-shrink: 0;
+    }
+    .tool-name {
+      font-family: var(--heading-font, 'Nunito', sans-serif);
+      color: var(--heading-color, #012970);
+      font-weight: 800;
+    }
+    .tool-desc {
+      font-size: 0.88rem;
+      color: #6c757d;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 2.6em;
+    }
+    .tool-tag {
+      font-size: 0.75rem;
+      background: #f4f6ff;
+      color: var(--heading-color, #012970);
+      border-radius: 6px;
+      padding: 2px 8px;
+    }
+    .pricing-badge {
+      font-size: 0.74rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+    .pricing-FREE { background: #e6f7ee; color: #198754; }
+    .pricing-FREEMIUM { background: #e8eeff; color: var(--accent-color, #4154f1); }
+    .pricing-PAID { background: #fff3e6; color: #d97706; }
+    .dir-pager {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .dir-pager button {
+      min-width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: 1px solid var(--pl-line, rgba(1, 41, 112, 0.14));
+      background: #fff;
+      color: var(--heading-color, #012970);
+      font-weight: 600;
+      font-size: 0.88rem;
+    }
+    .dir-pager button.active {
+      background: var(--accent-color, #4154f1);
+      border-color: var(--accent-color, #4154f1);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div id="header"></div>
+
+  <main>
+    <div class="dir-title">
+      <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <h1>AI 디렉토리</h1>
+        <nav aria-label="현재 위치">
+          <ol class="dir-crumbs"><li><a href="/">Home</a></li><li aria-current="page">Directory</li></ol>
+        </nav>
+      </div>
+    </div>
+
+    <div class="container pb-5">
+      <section class="dir-filter-box" aria-label="AI 툴 검색 및 필터">
+        <div class="row g-2 align-items-center">
+          <div class="col-md-6">
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+              <input id="keyword-input" type="search" class="form-control border-start-0" placeholder="AI 툴 이름, 설명, 태그 검색 (예: 코딩, 번역, GPT)">
+              <button id="search-btn" class="btn btn-primary px-3" type="button" style="background:var(--accent-color,#4154f1);border-color:var(--accent-color,#4154f1);">검색</button>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <select id="pricing-select" class="form-select" aria-label="요금제 필터">
+              <option value="">전체 요금제</option>
+              <option value="FREE">무료 (FREE)</option>
+              <option value="FREEMIUM">부분유료 (FREEMIUM)</option>
+              <option value="PAID">유료 (PAID)</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-3">
+            <select id="sort-select" class="form-select" aria-label="정렬 기준">
+              <option value="popular">인기순 (조회수)</option>
+              <option value="name">이름순 (가나다/ABC)</option>
+              <option value="price_asc">낮은 가격순</option>
+              <option value="price_desc">높은 가격순</option>
+              <option value="latest">최신 등록순</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="category-pills" class="dir-cat-pills" role="group" aria-label="카테고리 필터">
+          <button type="button" class="dir-cat-btn active" data-category="">전체</button>
+        </div>
+      </section>
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <p id="result-summary" class="text-muted small mb-0">불러오는 중...</p>
+      </div>
+
+      <div id="model-grid" class="row g-3"></div>
+
+      <nav aria-label="페이지 이동" class="mt-4">
+        <ul id="pagination" class="dir-pager"></ul>
+      </nav>
+    </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="/assets/vendor/flexstart/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/common/layout.js"></script>
+  <script>
+    (async function () {
+      const state = {
+        keyword: '',
+        category: '',
+        pricingType: '',
+        sort: 'popular',
+        page: 1,
+        size: 12
+      };
+
+      const keywordInput = document.getElementById('keyword-input');
+      const searchBtn = document.getElementById('search-btn');
+      const pricingSelect = document.getElementById('pricing-select');
+      const sortSelect = document.getElementById('sort-select');
+      const categoryPills = document.getElementById('category-pills');
+      const resultSummary = document.getElementById('result-summary');
+      const modelGrid = document.getElementById('model-grid');
+      const pagination = document.getElementById('pagination');
+
+      function escapeHtml(str) {
+        return String(str ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function pricingLabel(type) {
+        if (type === 'FREE') return '무료';
+        if (type === 'FREEMIUM') return '부분유료';
+        if (type === 'PAID') return '유료';
+        return type || '정보없음';
+      }
+
+      async function syncHeaderUser() {
+        try {
+          await window.layoutReady;
+          const res = await fetch('/api/v1/users/me', { credentials: 'same-origin' });
+          if (!res.ok) return;
+          const json = await res.json();
+          if (json.success && json.data) {
+            const headerUser = document.getElementById('header-user');
+            if (headerUser) {
+              headerUser.href = '/pages/mypage/index.html';
+              const nameEl = headerUser.querySelector('.pl-user-name');
+              if (nameEl) nameEl.textContent = json.data.username;
+            }
+          }
+        } catch (_) {}
+      }
+
+      async function loadCategories() {
+        try {
+          const res = await fetch('/api/v1/models/categories');
+          const json = await res.json();
+          if (!res.ok || !json.success) return;
+
+          const categories = json.data.categories || [];
+          categoryPills.innerHTML = `<button type="button" class="dir-cat-btn ${state.category === '' ? 'active' : ''}" data-category="">전체</button>` +
+            categories.map(cat =>
+              `<button type="button" class="dir-cat-btn ${state.category === cat ? 'active' : ''}" data-category="${escapeHtml(cat)}">${escapeHtml(cat)}</button>`
+            ).join('');
+
+          categoryPills.querySelectorAll('.dir-cat-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              state.category = btn.dataset.category;
+              state.page = 1;
+              categoryPills.querySelectorAll('.dir-cat-btn').forEach(b => b.classList.remove('active'));
+              btn.classList.add('active');
+              loadModels();
+            });
+          });
+        } catch (_) {}
+      }
+
+      async function loadModels() {
+        modelGrid.innerHTML = `
+          <div class="col-12 text-center py-5 text-muted">
+            <div class="spinner-border spinner-border-sm me-2" role="status"></div>AI 툴 목록을 불러오는 중입니다...
+          </div>`;
+
+        const params = new URLSearchParams();
+        if (state.keyword) params.set('keyword', state.keyword);
+        if (state.category) params.set('category', state.category);
+        if (state.pricingType) params.set('pricingType', state.pricingType);
+        if (state.sort) params.set('sort', state.sort);
+        params.set('page', String(state.page));
+        params.set('size', String(state.size));
+
+        try {
+          const res = await fetch(`/api/v1/models?${params.toString()}`);
+          const json = await res.json();
+
+          if (!res.ok || !json.success) {
+            modelGrid.innerHTML = `<div class="col-12 text-center py-5 text-danger">목록을 불러오지 못했습니다.</div>`;
+            return;
+          }
+
+          const { items, totalElements, totalPages, page } = json.data;
+          resultSummary.textContent = `총 ${totalElements}개의 AI 툴 (${page} / ${Math.max(totalPages, 1)} 페이지)`;
+
+          if (!items || items.length === 0) {
+            modelGrid.innerHTML = `
+              <div class="col-12 text-center py-5 bg-white border rounded-4">
+                <i class="bi bi-search fs-2 text-muted d-block mb-2"></i>
+                <p class="mb-1 fw-semibold">조건에 맞는 AI 툴이 없습니다.</p>
+                <p class="small text-muted mb-0">검색어나 필터 조건을 변경해 보세요.</p>
+              </div>`;
+            pagination.innerHTML = '';
+            return;
+          }
+
+          modelGrid.innerHTML = items.map(item => {
+            const tagsHtml = (item.tagList || []).slice(0, 3)
+              .map(t => `<span class="tool-tag">#${escapeHtml(t)}</span>`).join('');
+            const korBadge = item.koreanSupport
+              ? `<span class="badge text-bg-light border text-dark fw-normal">한국어 지원</span>`
+              : '';
+            const logoHtml = item.logoUrl
+              ? `<img src="${escapeHtml(item.logoUrl)}" alt="${escapeHtml(item.name)}" class="tool-logo" onerror="this.style.display='none'">`
+              : `<div class="tool-logo d-flex align-items-center justify-content-center fw-bold text-primary">${escapeHtml(item.name.charAt(0))}</div>`;
+
+            return `
+              <div class="col-md-6 col-lg-4">
+                <a class="tool-card" href="/pages/directory/detail.html?id=${item.modelId}">
+                  <div class="d-flex align-items-start gap-3 mb-2">
+                    ${logoHtml}
+                    <div class="flex-grow-1 min-w-0">
+                      <div class="d-flex justify-content-between align-items-center gap-2">
+                        <h2 class="h6 tool-name mb-0 text-truncate">${escapeHtml(item.name)}</h2>
+                        <span class="pricing-badge pricing-${escapeHtml(item.pricingType)}">${pricingLabel(item.pricingType)}</span>
+                      </div>
+                      <div class="small text-muted mt-1">${escapeHtml(item.category)}</div>
+                    </div>
+                  </div>
+                  <p class="tool-desc mb-3">${escapeHtml(item.description || '설명이 없습니다.')}</p>
+                  <div class="d-flex flex-wrap gap-1 mb-3">${tagsHtml}</div>
+                  <div class="mt-auto pt-2 d-flex justify-content-between align-items-center small text-muted" style="border-top:1px solid var(--pl-line, rgba(1,41,112,0.08));">
+                    <div>
+                      <i class="bi bi-star-fill text-warning me-1"></i>
+                      <strong class="text-dark">${Number(item.averageRating || 0).toFixed(1)}</strong>
+                      <span class="ms-1">(${item.reviewCount || 0})</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                      ${korBadge}
+                      <span><i class="bi bi-eye me-1"></i>${item.searchCount || 0}</span>
+                    </div>
+                  </div>
+                </a>
+              </div>`;
+          }).join('');
+
+          renderPagination(page, totalPages);
+        } catch (_) {
+          modelGrid.innerHTML = `<div class="col-12 text-center py-5 text-danger">서버와 통신 중 오류가 발생했습니다.</div>`;
+        }
+      }
+
+      function renderPagination(currentPage, totalPages) {
+        if (!totalPages || totalPages <= 1) {
+          pagination.innerHTML = '';
+          return;
+        }
+        let html = '';
+        for (let i = 1; i <= totalPages; i++) {
+          html += `<li><button type="button" class="${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button></li>`;
+        }
+        pagination.innerHTML = html;
+        pagination.querySelectorAll('button[data-page]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            state.page = Number(btn.dataset.page);
+            loadModels();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        });
+      }
+
+      const urlParams = new URLSearchParams(location.search);
+      if (urlParams.get('keyword')) {
+        state.keyword = urlParams.get('keyword');
+        keywordInput.value = state.keyword;
+      }
+      if (urlParams.get('category')) {
+        state.category = urlParams.get('category');
+      }
+
+      searchBtn.addEventListener('click', () => {
+        state.keyword = keywordInput.value.trim();
+        state.page = 1;
+        loadModels();
+      });
+      keywordInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          state.keyword = keywordInput.value.trim();
+          state.page = 1;
+          loadModels();
+        }
+      });
+      pricingSelect.addEventListener('change', () => {
+        state.pricingType = pricingSelect.value;
+        state.page = 1;
+        loadModels();
+      });
+      sortSelect.addEventListener('change', () => {
+        state.sort = sortSelect.value;
+        state.page = 1;
+        loadModels();
+      });
+
+      syncHeaderUser();
+      await loadCategories();
+      await loadModels();
+    })();
+  </script>
+</body>
+</html>
