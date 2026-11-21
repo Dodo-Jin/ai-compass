@@ -32,9 +32,9 @@
 | POST | /api/v1/pipelines/recommend-by-survey | 설문으로 AI 툴 1개 추천 (저장 안 함). 아래 메모 참고 | B |
 | POST | /api/v1/pipelines/generate | 챗봇 요청으로 파이프라인 결과 생성 (저장 안 함). 아래 메모 참고 | B |
 | POST | /api/v1/pipelines | 생성한 파이프라인 저장 (title, blocks) | B |
-| GET | /api/v1/pipelines | 파이프라인 보관함 목록 | B |
+| GET | /api/v1/pipelines | 파이프라인 보관함 목록 (q, sort=latest\|oldest\|title, page, size) | B |
 | GET | /api/v1/pipelines/{pipelineId} | 파이프라인 상세 (blocks에 툴 이름 포함) | B |
-| PATCH | /api/v1/pipelines/{pipelineId} | 파이프라인 제목 수정 | B |
+| PUT | /api/v1/pipelines/{pipelineId} | 파이프라인 수정 (title, blocks 전체 교체) | B |
 | DELETE | /api/v1/pipelines/{pipelineId} | 파이프라인 삭제 | B |
 | POST | /api/v1/favorites | 즐겨찾기 추가 (modelId) | C |
 | DELETE | /api/v1/favorites/{modelId} | 즐겨찾기 삭제 | C |
@@ -47,9 +47,12 @@
 - 평균 별점(`avgRating`)과 리뷰 수(`reviewCount`)는 컬럼이 없어 `Reviews`에서 계산해서 응답
 - 요청/응답 예시와 에러 코드는 구현하면서 이 문서에 추가
 - `recommend-by-survey` 요청: `{ "job": "marketer|developer|creator|other", "usage": "personal|team|enterprise", "budget": "free|under30k|30k-150k|over150k" }`
-- `recommend-by-survey` 응답(200): `{ modelId, name, category, logoUrl, reason, priceText }`. 값 누락 400, 일치하는 툴 없음 404 (`{ message }`)
-- 예산 구간은 월 가격(달러, `price_min`/`price_max`) 기준: 무료 `price_min = 0`, 3만원 이하 `price_min <= 20`, 3~15만원 `20~100`과 겹침, 15만원 이상 `price_max >= 100`
+- `recommend-by-survey` 응답(200): `{ modelId, name, category, logoUrl, reason, priceText }`. 값 누락 400 `INVALID_REQUEST`
+- 예산 구간은 월 가격(달러, `price_min_usd`/`price_max_usd`) 기준: 무료 `price_min_usd = 0`, 3만원 이하 `price_min_usd <= 20`, 3~15만원 `20~100`과 겹침, 15만원 이상 `price_max_usd >= 100`
 - 사용량은 `AI_Models.target_scales`(콤마 구분)에 포함되면 통과, 비어 있으면 전체 대상. 일치하는 툴이 없으면 직업 → 사용량 순으로 조건을 풀어 다시 찾음(예산은 유지)
 - `generate` 요청: `{ "message": "..." }` (최대 500자). 응답(200): `{ title, reply, blocks: [{ modelId, order, purpose, modelName, category, logoUrl }] }`. 요청에 맞는 툴이 없으면 `blocks`는 빈 배열
-- `generate` 오류(`{ message }`): 400 메시지 비어 있음/너무 김, 429 AI 요청 한도, 502 AI 오류·응답 해석 실패, 503 AI 키 미설정/등록된 툴 없음, 504 AI 응답 지연
+- `generate` 오류: 400 메시지 비어 있음/너무 김, 429 AI 요청 한도, 502 AI 오류·응답 해석 실패, 503 AI 키 미설정/등록된 툴 없음, 504 AI 응답 지연
 - 챗봇 AI는 OpenAI 호환 API이고 `.env`의 `AI_API_KEY`, `AI_BASE_URL`, `AI_MODEL`로 설정. 응답의 modelId는 `AI_Models`에 있는 것만 통과
+- 파이프라인 보관함(`POST/GET/PUT/DELETE /pipelines...`)은 로그인 필요(401 `LOGIN_REQUIRED`)이고 본인 것만 다룸. 남의 파이프라인이나 없는 id는 모두 404 `PIPELINE_NOT_FOUND`. `generate`, `recommend-by-survey`는 로그인 없이 사용
+- 보관함 요청 `{ title(1~100자), blocks: [{ modelId, purpose?(200자 이내) }] }`(1~20개, 순서는 배열 순서). 없는 modelId는 400 `MODEL_NOT_FOUND`. 응답 블록에는 `order`, `modelName`, `category`, `logoUrl`이 함께 옴(삭제된 툴은 null). 생성 201, 삭제 204
+- `recommend-by-survey` 응답의 `priceText`는 `AI_Models.price_text`(없으면 가격 범위로 생성), `logoUrl`은 `AI_Models.logo_url`. 일치하는 툴이 없으면 404 `MODEL_NOT_FOUND`

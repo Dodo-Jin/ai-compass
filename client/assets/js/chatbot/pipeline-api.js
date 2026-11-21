@@ -4,7 +4,7 @@
 import { api } from '/assets/js/common/api.js';
 import { mockApi } from './mock-api.js';
 
-const DEFAULT_USE_MOCK = true;
+const DEFAULT_USE_MOCK = false; // 백엔드 연결됨. 임시로 목을 쓰려면 주소에 ?mock=1
 
 function resolveUseMock() {
   const param = new URLSearchParams(location.search).get('mock');
@@ -50,11 +50,12 @@ const real = {
     return (Array.isArray(res) ? res : res.items ?? []).map(normalizeTool);
   },
 
-  /** GET /api/v1/pipelines?q=&sort=&page=&size= → { items, page, size, totalElements, totalPages } */
-  listPipelines: ({ q = '', sort = 'latest', page = 0, size = 12 } = {}) => {
-    const qs = new URLSearchParams({ sort, page, size });
+  /** GET /api/v1/pipelines?q=&sort=&page=&size= → { items, page, size, totalElements, totalPages } (로그인 필요). 서버 page 는 1부터, 화면은 0부터라서 여기서 변환 */
+  listPipelines: async ({ q = '', sort = 'latest', page = 0, size = 12 } = {}) => {
+    const qs = new URLSearchParams({ sort, page: page + 1, size });
     if (q) qs.set('q', q);
-    return api(`/pipelines?${qs}`);
+    const res = await api(`/pipelines?${qs}`);
+    return { ...res, page: res.page - 1 };
   },
 
   getPipeline: (id) => api(`/pipelines/${id}`),

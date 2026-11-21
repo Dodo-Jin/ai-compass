@@ -1,9 +1,12 @@
 package com.aicompass.pipeline;
 
+import com.aicompass.common.ApiException;
+import com.aicompass.common.ErrorCodes;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -16,17 +19,17 @@ public class SurveyRecommendService {
     static final Map<String, String> USAGES = Map.of("personal", "개인용", "team", "팀용", "enterprise", "엔터프라이즈");
     static final Map<String, String> BUDGETS = Map.of("free", "무료", "under30k", "3만원 이하", "30k-150k", "3~15만원", "over150k", "15만원 이상");
 
-    // ponytail: category 값은 A 가 확정하기 전 임시값. 확정되면 여기만 고친다. other 는 카테고리 제한 없음
+    // AI_Models.category 시드 값(db/migrations/002_seed_models.sql). other 는 카테고리 제한 없음
     static final Map<String, List<String>> JOB_CATEGORIES = Map.of(
-            "marketer", List.of("텍스트", "이미지", "리서치"),
-            "developer", List.of("코딩"),
-            "creator", List.of("이미지", "영상", "음성"));
+            "marketer", List.of("텍스트/LLM", "이미지 생성", "검색/리서치", "번역/글쓰기"),
+            "developer", List.of("코딩/개발"),
+            "creator", List.of("이미지 생성", "영상 생성", "오디오/음악"));
 
     public record Result(int modelId, String name, String category, String logoUrl, String reason, String priceText) {}
 
-    /** 잘못된 설문 값 */
-    public static class InvalidSurveyException extends RuntimeException {
-        InvalidSurveyException(String message) { super(message); }
+    /** 잘못된 설문 값 (400) */
+    public static class InvalidSurveyException extends ApiException {
+        InvalidSurveyException(String message) { super(HttpStatus.BAD_REQUEST, ErrorCodes.INVALID_REQUEST, message); }
     }
 
     private final JdbcTemplate jdbc;
@@ -35,7 +38,7 @@ public class SurveyRecommendService {
         this.jdbc = jdbc;
     }
 
-    /** 일치하는 툴이 없으면 null. 직업 → 사용량 순으로 조건을 풀어 다시 찾는다(예산은 유지). */
+    /** 일치하는 툴이 없으면 404. 직업 → 사용량 순으로 조건을 풀어 다시 찾는다(예산은 유지). */
     public Result recommend(String job, String usage, String budget) {
         // Map.of 는 containsKey(null) 이 NPE 라서 null 을 먼저 거른다
         if (job == null || usage == null || budget == null
@@ -48,12 +51,12 @@ public class SurveyRecommendService {
             Result r = find(a[0] ? job : null, a[1] ? usage : null, budget);
             if (r != null) return r;
         }
-        return null;
+        throw ApiException.notFound("MODEL_NOT_FOUND", "조건에 맞는 AI 툴을 찾지 못했어요. 다른 조건으로 시도해 보세요.");
     }
 
     private Result find(String job, String usage, String budget) {
         StringBuilder sql = new StringBuilder(
-                "SELECT model_id, name, category, description, price_min, price_max FROM AI_Models WHERE ")
+                "SELECT model_id, name, category, description, logo_url, price_text, price_min_usd, price_max_usd FROM AI_Models WHERE ")
                 .append(budgetCondition(budget));
         List<Object> args = new ArrayList<>();
         List<String> cats = job == null ? null : JOB_CATEGORIES.get(job);
@@ -76,8 +79,11 @@ public class SurveyRecommendService {
             used.add(BUDGETS.get(budget));
             String reason = String.join(" · ", used) + " 예산에 적합한 " + rs.getString("category") + " AI입니다."
                     + (description == null ? "" : " " + description);
-            return new Result(rs.getInt("model_id"), rs.getString("name"), rs.getString("category"), null, reason,
-                    priceText(budget, rs.getBigDecimal("price_min"), rs.getBigDecimal("price_max")));
+            String priceText = rs.getString("price_text"); // 시드의 상세 요금 안내가 있으면 그대로, 없으면 가격 범위로 만든다
+            if (priceText == null || priceText.isBlank()) {
+                priceText = priceText(budget, rs.getBigDecimal("price_min_usd"), rs.getBigDecimal("price_max_usd"));
+            }
+            return new Result(rs.getInt("model_id"), rs.getString("name"), rs.getString("category"), rs.getString("logo_url"), reason, priceText);
         }, args.toArray());
         return rows.isEmpty() ? null : rows.get(0);
     }
@@ -85,10 +91,10 @@ public class SurveyRecommendService {
     // 예산 구간(달러): 3만원 ≈ $20, 15만원 ≈ $100. NULL 가격은 어느 구간에도 안 걸린다.
     static String budgetCondition(String budget) {
         return switch (budget) {
-            case "free" -> "price_min = 0";
-            case "under30k" -> "price_min <= 20";
-            case "30k-150k" -> "price_min <= 100 AND price_max >= 20";
-            case "over150k" -> "price_max >= 100";
+            case "free" -> "price_min_usd = 0";
+            case "under30k" -> "price_min_usd <= 20";
+            case "30k-150k" -> "price_min_usd <= 100 AND price_max_usd >= 20";
+            case "over150k" -> "price_max_usd >= 100";
             default -> throw new InvalidSurveyException("알 수 없는 예산입니다.");
         };
     }

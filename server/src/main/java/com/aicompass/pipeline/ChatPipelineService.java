@@ -1,5 +1,7 @@
 package com.aicompass.pipeline;
 
+import com.aicompass.common.ApiException;
+import com.aicompass.common.ErrorCodes;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
@@ -9,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -30,19 +33,26 @@ public class ChatPipelineService {
     static final int PURPOSE_MAX = 200;
     static final String DEFAULT_TITLE = "나만의 AI 파이프라인";
 
-    record Model(int id, String name, String category, String description) {}
+    record Model(int id, String name, String category, String description, String logoUrl) {}
 
     public record Block(int modelId, int order, String purpose, String modelName, String category, String logoUrl) {}
 
     public record Result(String title, String reply, List<Block> blocks) {}
 
-    /** status 는 HTTP 상태 코드 */
-    public static class ChatException extends RuntimeException {
-        final int status;
-
+    /** 챗봇 오류. status 는 HTTP 상태 코드 */
+    public static class ChatException extends ApiException {
         ChatException(int status, String message) {
-            super(message);
-            this.status = status;
+            super(HttpStatus.valueOf(status), code(status), message);
+        }
+
+        private static String code(int status) {
+            return switch (status) {
+                case 400 -> ErrorCodes.INVALID_REQUEST;
+                case 429 -> "AI_RATE_LIMITED";
+                case 503 -> "CHATBOT_UNAVAILABLE";
+                case 504 -> "AI_TIMEOUT";
+                default -> "AI_ERROR";
+            };
         }
     }
 
@@ -71,9 +81,9 @@ public class ChatPipelineService {
 
         // ponytail: 툴 100개까지만 프롬프트에 넣는다. 더 늘면 카테고리로 먼저 좁히는 방식으로 바꾼다
         Map<Integer, Model> models = new LinkedHashMap<>();
-        jdbc.query("SELECT model_id, name, category, description FROM AI_Models ORDER BY ranking_score DESC, model_id LIMIT 100",
+        jdbc.query("SELECT model_id, name, category, description, logo_url FROM AI_Models ORDER BY ranking_score DESC, model_id LIMIT 100",
                 (rs) -> {
-                    models.put(rs.getInt("model_id"), new Model(rs.getInt("model_id"), rs.getString("name"), rs.getString("category"), rs.getString("description")));
+                    models.put(rs.getInt("model_id"), new Model(rs.getInt("model_id"), rs.getString("name"), rs.getString("category"), rs.getString("description"), rs.getString("logo_url")));
                 });
         if (models.isEmpty()) throw new ChatException(503, "추천할 AI 툴이 아직 등록되지 않았어요.");
 
@@ -138,7 +148,7 @@ public class ChatPipelineService {
             Model m = models.get(b.path("modelId").asInt(-1));
             if (m == null || !seen.add(m.id()) || blocks.size() >= BLOCKS_MAX) continue;
             String purpose = cut(b.path("purpose").asText("").trim(), PURPOSE_MAX);
-            blocks.add(new Block(m.id(), blocks.size() + 1, purpose.isEmpty() ? null : purpose, m.name(), m.category(), null));
+            blocks.add(new Block(m.id(), blocks.size() + 1, purpose.isEmpty() ? null : purpose, m.name(), m.category(), m.logoUrl()));
         }
         return new Result(title.isEmpty() ? DEFAULT_TITLE : title, reply, blocks);
     }
