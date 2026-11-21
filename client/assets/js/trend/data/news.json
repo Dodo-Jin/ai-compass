@@ -1,13 +1,59 @@
 {
+  "_comment": "트렌드 페이지 '최신 AI 동향' (담당 C). 첫 번째 뉴스가 큰 카드(요약 표시)로 나온다. keywords 는 디렉토리 검색어(시드 태그와 일치하는 단어)로 쓴다. 발표 직전에 최신 기사로 한 번 더 바꿀 것. 마지막 갱신: 2026-11-21",
   "success": true,
   "data": {
     "items": [
-      { "newsId": 1, "tag": "모델 업데이트", "title": "[헤드라인] 주요 챗봇 신규 모델 업데이트, 무엇이 달라졌나", "summary": "[요약 2~3줄] 업데이트 핵심 변경점과 성능 변화를 짧게 정리해 보여주는 영역입니다.", "source": "[매체명]", "publishedAt": "2026-11-12T12:00:00+09:00", "relatedModels": ["ChatGPT"], "url": "#" },
-      { "newsId": 2, "tag": "신규 출시", "title": "[헤드라인] 영상 생성 AI 신규 서비스 공개", "summary": "", "source": "[매체명]", "publishedAt": "2026-11-12T09:00:00+09:00", "relatedModels": ["[관련 모델명]"], "url": "#" },
-      { "newsId": 3, "tag": "요금제 변경", "title": "[헤드라인] 코딩 어시스턴트 요금제 개편 정리", "summary": "", "source": "[매체명]", "publishedAt": "2026-11-11T10:00:00+09:00", "relatedModels": ["[관련 모델명]"], "url": "#" },
-      { "newsId": 4, "tag": "비교 리뷰", "title": "[헤드라인] 음성 합성 AI 3종 한국어 품질 비교", "summary": "", "source": "[매체명]", "publishedAt": "2026-11-10T10:00:00+09:00", "relatedModels": ["[관련 모델명]"], "url": "#" },
-      { "newsId": 5, "tag": "활용 팁", "title": "[헤드라인] 논문 요약 → 발표 자료 파이프라인 만들기", "summary": "", "source": "[매체명]", "publishedAt": "2026-11-09T10:00:00+09:00", "relatedModels": ["[관련 모델명]"], "url": "#" }
+      {
+        "newsId": 1,
+        "tag": "신규 기능",
+        "title": "OpenAI, ChatGPT 월렛 출시… AI 에이전트가 사용자 대신 결제",
+        "summary": "ChatGPT의 상시 실행 에이전트 'dots'가 카드 정보를 직접 받지 않고도 사용자를 대신해 물건을 살 수 있게 됐습니다. 결제마다 품목·금액·카드를 확인하고 생체 인증으로 승인해야 하며, 우선 미국 Pro 구독자에게 제공됩니다.",
+        "source": "OpenAI",
+        "publishedAt": "2026-11-13T12:00:00Z",
+        "relatedModels": ["ChatGPT"],
+        "url": "https://openai.com/index/introducing-chatgpt-wallet/"
+      },
+      {
+        "newsId": 2,
+        "tag": "개인정보",
+        "title": "구글, 기록을 꺼도 Gemini 대화를 약 두 달간 보관하기로",
+        "summary": "Gemini 기록을 끈 상태의 대화 보관 기간이 72시간에서 약 두 달로 늘어납니다. 구글은 서비스 안전성 강화를 이유로 들었습니다.",
+        "source": "Gizmodo",
+        "publishedAt": "2026-11-17T12:00:00Z",
+        "relatedModels": ["Gemini"],
+        "url": "https://gizmodo.com/google-to-keep-ai-chat-logs-for-two-months-even-with-gemini-history-turned-off-2000841271"
+      },
+      {
+        "newsId": 3,
+        "tag": "신규 출시",
+        "title": "Suno, 작곡 프로그램과 연결하는 'Bridge' 베타 공개",
+        "summary": "에이블톤 라이브 12(Mac)에서 곡의 템포·키에 맞는 악기·보컬 파트를 생성해 작업 중인 프로젝트에 바로 넣을 수 있습니다.",
+        "source": "Digital Music News",
+        "publishedAt": "2026-11-16T12:00:00Z",
+        "relatedModels": ["Suno"],
+        "url": "https://digitalmusicnews.com/2026/11/16/suno-bridge-daw-integrations-ableton"
+      },
+      {
+        "newsId": 4,
+        "tag": "신규 출시",
+        "title": "Anthropic, 화상회의에 참여하는 'Claude Meetings' 베타 출시",
+        "summary": "회의 중 계획 초안 작성, 화이트보드 정리, 업무 앱 정보 조회를 돕습니다. Team·Enterprise 요금제에서 Google Meet부터 지원합니다.",
+        "source": "TechCrunch",
+        "publishedAt": "2026-11-10T12:00:00Z",
+        "relatedModels": ["Claude"],
+        "url": "https://techcrunch.com/2026/11/10/anthropic-launches-claude-meetings-to-turn-workplace-discussions-into-plans-and-tasks/"
+      },
+      {
+        "newsId": 5,
+        "tag": "비즈니스",
+        "title": "ChatGPT에 기업 프로필 '비즈니스 허브' 등장",
+        "summary": "기업이 ChatGPT 안에서 자사 정보를 직접 등록·수정하고, 고객 질문에 답하는 전용 에이전트를 만들 수 있습니다. 현재 베타입니다.",
+        "source": "TechCrunch",
+        "publishedAt": "2026-11-10T12:00:00Z",
+        "relatedModels": ["ChatGPT"],
+        "url": "https://techcrunch.com/2026/11/10/openai-rolls-out-new-business-profiles-making-chatgpt-just-a-little-bit-more-like-google/"
+      }
     ],
-    "keywords": ["영상생성", "코딩에이전트", "AI검색", "음성복제", "논문요약", "무료AI"]
+    "keywords": ["AI작곡", "멀티모달", "장문요약", "데이터분석", "AI코드에디터", "비디오생성"]
   }
 }
