@@ -1,0 +1,78 @@
+/* 마이페이지 > 즐겨찾기 비교 전용 스타일 (담당 C).
+   틀(프로필·탭·패널·버튼)은 pipeline.css 의 pl-* 를 그대로 쓰고, 여기에는 이 화면에만 있는 것만 둔다. */
+
+/* FlexStart main.css 의 section 기본값(60px 여백, 배경)을 끈다 */
+.fv-section { padding: 0; background: transparent; overflow: visible; scroll-margin-top: 100px; }
+.fv-section + .fv-section { margin-top: 40px; }
+.fv-section-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 20px; margin-bottom: 18px; }
+.fv-h2 { margin: 0; font-size: 22px; font-weight: 800; }
+.fv-accent { color: var(--accent-color, #4154f1); }
+.fv-hint { margin: 4px 0 0; color: #5b6478; font-size: 14px; }
+.fv-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.fv-filter { display: flex; align-items: center; gap: 8px; margin: 0; color: #5b6478; font-size: 14px; white-space: nowrap; }
+.fv-filter select { min-width: 120px; min-height: 40px; }
+.fv-outline { background: #fff; color: var(--accent-color, #4154f1); border: 1.5px solid var(--accent-color, #4154f1); }
+.fv-outline:hover { background: var(--accent-color, #4154f1); color: #fff; }
+
+/* 즐겨찾기 칩 */
+.fv-chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+.fv-chip { position: relative; display: flex; align-items: center; border: 1.5px solid var(--pl-line); border-radius: 12px; background: #fff; transition: border-color .15s, background .15s; }
+.fv-chip.on { border-color: var(--accent-color, #4154f1); background: #f1f4ff; }
+.fv-chip.locked { opacity: .55; }
+.fv-chip-main { flex: 1; display: flex; align-items: center; gap: 10px; min-width: 0; min-height: 56px; margin: 0; padding: 10px 4px 10px 12px; cursor: pointer; }
+.fv-chip.locked .fv-chip-main { cursor: not-allowed; }
+.fv-chip-main .form-check-input { flex: none; width: 20px; height: 20px; margin: 0; }
+.fv-chip-text { display: flex; flex-direction: column; min-width: 0; }
+.fv-chip-text strong { color: var(--heading-color, #012970); font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fv-chip-text small { color: #5b6478; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fv-chip-remove, .fv-head-remove {
+  flex: none; display: grid; place-items: center; width: 36px; height: 36px; margin-right: 6px;
+  border: 0; border-radius: 8px; background: transparent; color: #8a93b2;
+}
+.fv-chip-remove:hover, .fv-head-remove:hover { background: #fdecec; color: #c0392b; }
+
+.fv-logo { flex: none; display: grid; place-items: center; border-radius: 10px; color: #fff; font-weight: 800; font-size: 16px; object-fit: cover; background: #e9edf5; }
+
+/* 비교표 */
+.fv-diff-toggle { display: flex; align-items: center; gap: 8px; min-height: 44px; margin: 0; color: #3c4459; font-size: 14px; cursor: pointer; }
+.fv-diff-toggle .form-check-input { width: 18px; height: 18px; margin: 0; }
+.fv-table-wrap { overflow-x: auto; border: 1px solid #e3e8f1; border-radius: 12px; }
+.fv-table { width: 100%; min-width: 720px; table-layout: fixed; border-collapse: collapse; font-size: 15px; } /* 고정 배치: 칸 너비를 나눠 갖고, 긴 이름은 … 처리 */
+.fv-table th, .fv-table td { padding: 14px 16px; border-bottom: 1px solid #eef1f7; vertical-align: middle; text-align: left; }
+.fv-table th + th, .fv-table td, .fv-table tbody th + td { border-left: 1px solid #e3e8f1; }
+.fv-table thead th { background: #fff; vertical-align: top; border-bottom-color: #e3e8f1; }
+.fv-table tbody th { width: 116px; background: #f4f7fc; color: #3c4459; font-size: 14px; font-weight: 700; white-space: nowrap; }
+.fv-table .fv-label-col { width: 116px; background: #f4f7fc; color: #5b6478; font-size: 14px; font-weight: 500; }
+.fv-table tbody tr:last-child th, .fv-table tbody tr:last-child td { border-bottom: 0; }
+.fv-table.diff-only tr.fv-same { display: none; }
+.fv-long { line-height: 1.55; }
+.fv-best { font-weight: 700; color: var(--heading-color, #012970); }
+.fv-best-tag { display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: 999px; background: #e8ecfe; color: #2f3fb8; font-size: 12px; font-weight: 700; white-space: nowrap; }
+
+/* 열 머리: 윗줄 로고(왼쪽)·빼기 버튼(오른쪽), 아랫줄 이름·상세 보기. 이름이 칸 폭을 다 쓴다 */
+.fv-head { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.fv-head-text { display: flex; flex-direction: column; width: 100%; min-width: 0; }
+/* 툴 이름이 글자 중간에서 끊기지 않게: 한 줄로 두고, 정말 길면 … */
+.fv-head-text strong { color: var(--heading-color, #012970); font-size: 17px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; overflow-wrap: normal; }
+.fv-head-text a { font-size: 13px; font-weight: 600; white-space: nowrap; }
+.fv-head-remove { position: absolute; top: -6px; right: -10px; margin: 0; }
+.fv-add-col { width: 130px; min-width: 120px; background: #fafbfd; }
+.fv-table thead th.fv-add-col { min-width: 120px; padding-inline: 10px; }
+.fv-add { width: 100%; min-height: 64px; border: 1.5px dashed #b9c3d6; border-radius: 10px; background: transparent; color: #4a5371; font-size: 13px; }
+.fv-add:hover { border-color: var(--accent-color, #4154f1); color: var(--accent-color, #4154f1); }
+.fv-visit { padding: 8px 16px; font-size: 14px; }
+.fv-note { margin: 12px 0 0; color: #5b6478; font-size: 13px; }
+
+/* 알림 */
+.fv-toast {
+  position: fixed; left: 50%; bottom: 32px; z-index: 1080; display: flex; align-items: center; gap: 14px;
+  padding: 12px 14px 12px 20px; border-radius: 999px; background: #1b2232; color: #fff; font-size: 14px;
+  transform: translate(-50%, 20px); opacity: 0; pointer-events: none; transition: .2s;
+}
+.fv-toast.show { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
+.fv-toast-btn { min-height: 32px; padding: 4px 12px; border: 0; border-radius: 999px; background: #fff; color: #1b2232; font-weight: 700; font-size: 13px; }
+
+@media (max-width: 575.98px) {
+  .fv-chips { grid-template-columns: 1fr; }
+  .fv-h2 { font-size: 20px; }
+}
