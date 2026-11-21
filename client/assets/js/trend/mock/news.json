@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "data": {
+    "items": [
+      { "newsId": 1, "tag": "모델 업데이트", "title": "[헤드라인] 주요 챗봇 신규 모델 업데이트, 무엇이 달라졌나", "summary": "[요약 2~3줄] 업데이트 핵심 변경점과 성능 변화를 짧게 정리해 보여주는 영역입니다.", "source": "[매체명]", "publishedAt": "2026-11-12T12:00:00+09:00", "relatedModels": ["ChatGPT"], "url": "#" },
+      { "newsId": 2, "tag": "신규 출시", "title": "[헤드라인] 영상 생성 AI 신규 서비스 공개", "summary": "", "source": "[매체명]", "publishedAt": "2026-11-12T09:00:00+09:00", "relatedModels": ["[관련 모델명]"], "url": "#" },
+      { "newsId": 3, "tag": "요금제 변경", "title": "[헤드라인] 코딩 어시스턴트 요금제 개편 정리", "summary": "", "source": "[매체명]", "publishedAt": "2026-11-11T10:00:00+09:00", "relatedModels": ["[관련 모델명]"], "url": "#" },
+      { "newsId": 4, "tag": "비교 리뷰", "title": "[헤드라인] 음성 합성 AI 3종 한국어 품질 비교", "summary": "", "source": "[매체명]", "publishedAt": "2026-11-10T10:00:00+09:00", "relatedModels": ["[관련 모델명]"], "url": "#" },
+      { "newsId": 5, "tag": "활용 팁", "title": "[헤드라인] 논문 요약 → 발표 자료 파이프라인 만들기", "summary": "", "source": "[매체명]", "publishedAt": "2026-11-09T10:00:00+09:00", "relatedModels": ["[관련 모델명]"], "url": "#" }
+    ],
+    "keywords": ["영상생성", "코딩에이전트", "AI검색", "음성복제", "논문요약", "무료AI"]
+  }
+}

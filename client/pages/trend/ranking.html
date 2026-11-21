@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI 트렌드 | AI Compass</title>
+  <link href="/assets/vendor/flexstart/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/assets/vendor/flexstart/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="/assets/vendor/flexstart/css/main.css" rel="stylesheet">
+  <link href="/assets/css/common.css" rel="stylesheet">
+  <link href="/pages/trend/ranking.css" rel="stylesheet">
+</head>
+<body class="trend-page">
+  <div id="header"></div>
+
+  <div class="trend-title">
+    <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <h1>AI 트렌드 (Trend)</h1>
+      <nav aria-label="breadcrumb">
+        <ol class="trend-breadcrumb">
+          <li><a href="/">Home</a></li>
+          <li aria-current="page">Trend</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <main class="container trend-main">
+    <div class="row g-4">
+      <!-- 실시간 AI 랭킹 -->
+      <section class="col-lg-8" aria-labelledby="rank-title">
+        <div class="trend-card">
+          <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+            <div>
+              <h2 id="rank-title" class="trend-h2">실시간 AI 랭킹 Top 100</h2>
+              <p id="trend-updated" class="trend-sub">&nbsp;</p>
+            </div>
+            <div id="trend-periods" class="period-toggle" role="group" aria-label="집계 기간"></div>
+          </div>
+
+          <div id="trend-tabs" class="cat-tabs" role="tablist" aria-label="카테고리"></div>
+
+          <div class="rank-head" aria-hidden="true">
+            <span>순위</span><span>변동</span><span></span><span>AI 도구</span><span>트렌드 점수</span><span class="text-center">찜</span>
+          </div>
+          <ol id="trend-list" class="rank-list" aria-live="polite"></ol>
+
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3">
+            <p class="trend-note">트렌드 점수 = 검색량 + 즐겨찾기 수 + 파이프라인 채택률 가중 합산</p>
+            <button id="trend-more" type="button" class="btn-outline-accent">11위 ~ 20위 더 보기</button>
+          </div>
+          <p id="trend-status" class="visually-hidden" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <!-- 최신 AI 동향 -->
+      <aside class="col-lg-4" aria-labelledby="news-title">
+        <div class="d-flex justify-content-between align-items-center mb-3 px-1">
+          <h2 id="news-title" class="trend-h2 mb-0">최신 AI 동향</h2>
+          <a class="small-link" href="#">전체 보기</a>
+        </div>
+        <div id="trend-news" class="news-list"></div>
+
+        <div class="trend-card mt-3">
+          <h3 class="keyword-title">급상승 키워드</h3>
+          <div id="trend-keywords" class="keyword-list"></div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <div id="trend-toast" class="trend-toast" role="status"></div>
+  <div id="footer"></div>
+
+  <script src="/assets/vendor/flexstart/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/common/layout.js"></script>
+  <script type="module" src="/assets/js/trend/ranking.js"></script>
+</body>
+</html>
