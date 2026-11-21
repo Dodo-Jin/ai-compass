@@ -44,6 +44,15 @@
 | GET | /api/v1/favorites | 내 즐겨찾기 목록 | C |
 | GET | /api/v1/favorites/compare | 즐겨찾기 비교표 데이터 (`?modelIds=1,2,3`, 2~4개) | C |
 
+## 즐겨찾기 (C)
+
+- 모두 로그인 필요(401 `LOGIN_REQUIRED`). 같은 툴을 다시 추가해도 오류가 아님
+- `POST /favorites` 요청: `{ "modelId": 3 }`. 응답: 새로 추가 201, 이미 있음 200, 본문 `{ modelId, isFavorited: true, favoriteCount }`. modelId 없음 400 `INVALID_REQUEST`, 없는 툴 404 `MODEL_NOT_FOUND`
+- `DELETE /favorites/{modelId}`: 204 (즐겨찾기에 없던 툴이어도 204)
+- `GET /favorites?category=&page=1&size=50`(size 최대 100): `{ items: [{ favoriteId, modelId, name, category, description, logoUrl, tags[], pricingType, priceText, averageRating, reviewCount, favoriteCount, favoritedAt }], categories[], page, size, totalElements, totalPages }`. 최근 추가 순, `categories`는 필터용(전체 기준)
+- `GET /favorites/compare?modelIds=1,2,3`(서로 다른 2~4개, 요청 순서대로): `{ items: [{ modelId, name, category, description, logoUrl, siteUrl, tags[], pricingType, priceText, priceMinUsd, priceMaxUsd, inputTypes[], koreanSupport, strengths, limitations, averageRating, reviewCount, favoriteCount, isFavorited }] }`. 개수·형식 오류 400, 없는 툴 404 `MODEL_NOT_FOUND`
+- 즐겨찾기 목록·비교표는 `AI_Models` 확장 컬럼(`db/migrations/001_add_model_columns.sql`)이 필요
+
 ## 메모
 
 - 파이프라인은 `Pipelines.block_data`(TEXT)에 `blocks` 배열을 JSON 문자열로 저장하고, API에서는 배열로 주고받음
