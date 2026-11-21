@@ -12,7 +12,6 @@
 /server/src/main/java/com/aicompass/trend/    @jungwukc
 /server/src/main/java/com/aicompass/favorite/ @jungwukc
 /client/assets/js/trend/  @jungwukc
-/client/index.html        @jungwukc
 
 # 공용 코드
 /server/src/main/java/com/aicompass/common/   @jungwukc

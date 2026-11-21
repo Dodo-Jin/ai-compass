@@ -30,7 +30,7 @@ cd server && gradle bootRun     # gradle 미설치 시 IntelliJ에서 server 폴
 |---|---|
 | A | db/, 로그인·가입(auth), AI 디렉토리·상세·리뷰 |
 | B | 챗봇, 파이프라인 시각화, 마이페이지 보관함 |
-| C | 트렌드 피드, 마이페이지 즐겨찾기 비교표, 홈, 공용 코드(`common` 패키지·`api.js`) |
+| C | 트렌드 피드, 마이페이지 즐겨찾기 비교표, 공용 코드(`common` 패키지·`api.js`) |
 
 ## 규칙
 - `main` 직접 push 금지, `develop` 에서 `feature/<이름>-<기능>` 브랜치로 작업 후 PR
