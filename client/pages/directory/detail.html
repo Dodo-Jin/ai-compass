@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI 툴 상세 | AI Compass</title>
+  <link href="/assets/vendor/flexstart/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/assets/vendor/flexstart/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="/assets/vendor/flexstart/css/main.css" rel="stylesheet">
+  <link href="/assets/css/common.css" rel="stylesheet">
+  <style>
+    body {
+      background: var(--pl-bg, #f5f8ff);
+    }
+    .dir-title {
+      padding: 36px 0 24px;
+    }
+    .dir-title h1 {
+      font-family: var(--heading-font, 'Nunito', sans-serif);
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--heading-color, #012970);
+      margin: 0;
+    }
+    .dir-crumbs {
+      display: flex;
+      gap: 8px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-size: 0.88rem;
+      color: #6c757d;
+    }
+    .dir-crumbs li + li::before {
+      content: '/';
+      margin-right: 8px;
+      color: #adb5bd;
+    }
+    .dir-crumbs a {
+      color: var(--accent-color, #4154f1);
+      text-decoration: none;
+    }
+    .detail-card {
+      background: #fff;
+      border: 1px solid var(--pl-line, rgba(1, 41, 112, 0.08));
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 6px 20px rgba(1, 41, 112, 0.05);
+      margin-bottom: 24px;
+    }
+    .detail-logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 14px;
+      object-fit: contain;
+      background: var(--pl-bg, #f5f8ff);
+      border: 1px solid var(--pl-line, rgba(1, 41, 112, 0.08));
+      padding: 8px;
+    }
+    .spec-box {
+      background: var(--pl-bg, #f5f8ff);
+      border: 1px solid var(--pl-line, rgba(1, 41, 112, 0.08));
+      border-radius: 12px;
+      padding: 14px 16px;
+      height: 100%;
+    }
+    .spec-label {
+      font-size: 0.78rem;
+      color: #6c757d;
+      margin-bottom: 4px;
+    }
+    .spec-value {
+      font-size: 0.94rem;
+      font-weight: 600;
+      color: var(--heading-color, #012970);
+    }
+    .star-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #dee2e6;
+      padding: 0 2px;
+      cursor: pointer;
+    }
+    .star-btn.active {
+      color: #f59e0b;
+    }
+    .review-item {
+      border-bottom: 1px solid var(--pl-line, rgba(1, 41, 112, 0.08));
+      padding: 16px 0;
+    }
+    .review-item:last-child {
+      border-bottom: none;
+    }
+    .dir-pager {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .dir-pager button {
+      min-width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--pl-line, rgba(1, 41, 112, 0.14));
+      background: #fff;
+      color: var(--heading-color, #012970);
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    .dir-pager button.active {
+      background: var(--accent-color, #4154f1);
+      border-color: var(--accent-color, #4154f1);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div id="header"></div>
+
+  <main>
+    <div class="dir-title">
+      <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <h1 id="page-title">AI 툴 상세</h1>
+        <nav aria-label="현재 위치">
+          <ol class="dir-crumbs">
+            <li><a href="/">Home</a></li>
+            <li><a href="/pages/directory/list.html">Directory</a></li>
+            <li aria-current="page" id="crumb-name">상세</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+
+    <div class="container pb-5">
+      <div id="detail-root">
+        <div class="detail-card text-center py-5 text-muted">
+          <div class="spinner-border spinner-border-sm me-2" role="status"></div>AI 툴 정보를 불러오는 중입니다...
+        </div>
+      </div>
+
+      <!-- 리뷰 섹션 -->
+      <section id="review-section" class="detail-card d-none" aria-label="사용자 리뷰">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+          <h2 class="h5 fw-bold mb-0" style="font-family:var(--heading-font,'Nunito',sans-serif);color:var(--heading-color,#012970);">
+            사용자 리뷰 <span id="review-count-badge" class="badge text-bg-light border text-primary ms-1">0</span>
+          </h2>
+          <div class="small text-muted">
+            평균 별점 <i class="bi bi-star-fill text-warning"></i> <strong id="review-avg-text" class="text-dark">0.0</strong> / 5.0
+          </div>
+        </div>
+
+        <!-- 리뷰 작성/수정 폼 -->
+        <div id="review-form-box" class="rounded-3 p-3 mb-4" style="background:var(--pl-bg,#f5f8ff);border:1px solid var(--pl-line,rgba(1,41,112,0.08));">
+          <div id="review-login-prompt" class="d-none text-center py-2 small">
+            리뷰를 작성하려면 <a id="login-redirect-link" href="/pages/auth/login.html" class="fw-semibold">로그인</a>이 필요합니다.
+          </div>
+
+          <form id="review-form" class="d-none">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+              <div class="d-flex align-items-center gap-2">
+                <span class="small fw-semibold">별점 선택:</span>
+                <div id="star-picker" role="radiogroup" aria-label="별점">
+                  <button type="button" class="star-btn active" data-val="1"><i class="bi bi-star-fill"></i></button>
+                  <button type="button" class="star-btn active" data-val="2"><i class="bi bi-star-fill"></i></button>
+                  <button type="button" class="star-btn active" data-val="3"><i class="bi bi-star-fill"></i></button>
+                  <button type="button" class="star-btn active" data-val="4"><i class="bi bi-star-fill"></i></button>
+                  <button type="button" class="star-btn active" data-val="5"><i class="bi bi-star-fill"></i></button>
+                </div>
+                <span id="rating-label" class="small fw-bold" style="color:var(--accent-color,#4154f1);">5점</span>
+              </div>
+              <span id="char-count" class="small text-muted">0 / 200자</span>
+            </div>
+
+            <textarea id="review-content" class="form-control mb-2" rows="3" maxlength="200" placeholder="이 AI 툴을 사용해 본 솔직한 후기를 남겨주세요 (최대 200자)"></textarea>
+            <div id="review-form-alert" class="alert d-none py-2 small mb-2"></div>
+
+            <div class="d-flex justify-content-end gap-2">
+              <button type="button" id="delete-my-review-btn" class="btn btn-outline-danger btn-sm d-none">내 리뷰 삭제</button>
+              <button type="submit" id="review-submit-btn" class="btn btn-primary btn-sm px-3" style="background:var(--accent-color,#4154f1);border-color:var(--accent-color,#4154f1);">리뷰 등록</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="review-list"></div>
+        <nav aria-label="리뷰 페이지 이동" class="mt-3">
+          <ul id="review-pager" class="dir-pager"></ul>
+        </nav>
+      </section>
+    </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="/assets/vendor/flexstart/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/common/layout.js"></script>
+  <script>
+    (async function () {
+      const params = new URLSearchParams(location.search);
+      const modelId = Number(params.get('id'));
+      const detailRoot = document.getElementById('detail-root');
+      const reviewSection = document.getElementById('review-section');
+      const reviewLoginPrompt = document.getElementById('review-login-prompt');
+      const loginRedirectLink = document.getElementById('login-redirect-link');
+      const reviewForm = document.getElementById('review-form');
+      const reviewContent = document.getElementById('review-content');
+      const charCount = document.getElementById('char-count');
+      const reviewFormAlert = document.getElementById('review-form-alert');
+      const reviewSubmitBtn = document.getElementById('review-submit-btn');
+      const deleteMyReviewBtn = document.getElementById('delete-my-review-btn');
+      const reviewList = document.getElementById('review-list');
+      const reviewPager = document.getElementById('review-pager');
+      const starBtns = document.querySelectorAll('#star-picker .star-btn');
+      const ratingLabel = document.getElementById('rating-label');
+
+      let currentUser = null;
+      let currentModel = null;
+      let selectedRating = 5;
+      let myReviewId = null;
+      let reviewPage = 1;
+
+      function escapeHtml(str) {
+        return String(str ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function formatDate(iso) {
+        if (!iso) return '';
+        return iso.replace('T', ' ').slice(0, 16);
+      }
+
+      function setRating(val) {
+        selectedRating = val;
+        ratingLabel.textContent = `${val}점`;
+        starBtns.forEach(btn => {
+          btn.classList.toggle('active', Number(btn.dataset.val) <= val);
+        });
+      }
+
+      starBtns.forEach(btn => {
+        btn.addEventListener('click', () => setRating(Number(btn.dataset.val)));
+      });
+
+      reviewContent.addEventListener('input', () => {
+        charCount.textContent = `${reviewContent.value.length} / 200자`;
+      });
+
+      if (!modelId) {
+        detailRoot.innerHTML = `
+          <div class="detail-card text-center py-5">
+            <p class="fw-semibold mb-2">잘못된 접근입니다.</p>
+            <a href="/pages/directory/list.html" class="btn btn-outline-primary btn-sm">디렉토리로 돌아가기</a>
+          </div>`;
+        return;
+      }
+
+      async function loadCurrentUser() {
+        try {
+          await window.layoutReady;
+          const res = await fetch('/api/v1/users/me', { credentials: 'same-origin' });
+          if (!res.ok) return;
+          const json = await res.json();
+          if (json.success && json.data) {
+            currentUser = json.data;
+            const headerUser = document.getElementById('header-user');
+            if (headerUser) {
+              headerUser.href = '/pages/mypage/index.html';
+              const nameEl = headerUser.querySelector('.pl-user-name');
+              if (nameEl) nameEl.textContent = currentUser.username;
+            }
+          }
+        } catch (_) {}
+      }
+
+      async function loadModelDetail() {
+        try {
+          const res = await fetch(`/api/v1/models/${modelId}`, { credentials: 'same-origin' });
+          const json = await res.json();
+
+          if (!res.ok || !json.success) {
+            detailRoot.innerHTML = `
+              <div class="detail-card text-center py-5">
+                <p class="text-danger fw-semibold mb-2">${escapeHtml(json.error?.message || 'AI 툴을 찾을 수 없습니다.')}</p>
+                <a href="/pages/directory/list.html" class="btn btn-outline-primary btn-sm">목록으로 돌아가기</a>
+              </div>`;
+            return;
+          }
+
+          currentModel = json.data;
+          document.title = `${currentModel.name} | AI Compass`;
+          document.getElementById('page-title').textContent = currentModel.name;
+          document.getElementById('crumb-name').textContent = currentModel.name;
+          document.getElementById('review-count-badge').textContent = currentModel.reviewCount || 0;
+          document.getElementById('review-avg-text').textContent = Number(currentModel.averageRating || 0).toFixed(1);
+
+          const tagsHtml = (currentModel.tagList || [])
+            .map(t => `<span class="badge fw-normal me-1" style="background:#f4f6ff;color:var(--heading-color,#012970);">#${escapeHtml(t)}</span>`).join('');
+          const scaleHtml = (currentModel.targetScaleList || []).join(', ') || '정보 없음';
+          const priceRange = (currentModel.priceMinUsd !== null && currentModel.priceMinUsd !== undefined)
+            ? `$${currentModel.priceMinUsd} ~ $${currentModel.priceMaxUsd}`
+            : (currentModel.priceText || '정보 없음');
+
+          detailRoot.innerHTML = `
+            <div class="detail-card">
+              <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 pb-4" style="border-bottom:1px solid var(--pl-line,rgba(1,41,112,0.08));">
+                <div class="d-flex align-items-center gap-3">
+                  ${currentModel.logoUrl
+                    ? `<img src="${escapeHtml(currentModel.logoUrl)}" alt="${escapeHtml(currentModel.name)}" class="detail-logo" onerror="this.style.display='none'">`
+                    : `<div class="detail-logo d-flex align-items-center justify-content-center fs-3 fw-bold text-primary">${escapeHtml(currentModel.name.charAt(0))}</div>`}
+                  <div>
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                      <h2 class="h3 fw-bold mb-0" style="font-family:var(--heading-font,'Nunito',sans-serif);color:var(--heading-color,#012970);">${escapeHtml(currentModel.name)}</h2>
+                      <span class="badge" style="background:var(--accent-color,#4154f1);">${escapeHtml(currentModel.category)}</span>
+                      <span class="badge text-bg-light border text-dark">${escapeHtml(currentModel.pricingType || '')}</span>
+                    </div>
+                    <div class="mt-2 d-flex flex-wrap gap-3 small text-muted">
+                      <span><i class="bi bi-star-fill text-warning me-1"></i><strong class="text-dark">${Number(currentModel.averageRating || 0).toFixed(1)}</strong> (${currentModel.reviewCount || 0}개 리뷰)</span>
+                      <span><i class="bi bi-eye me-1"></i>조회 ${currentModel.searchCount || 0}회</span>
+                      <span><i class="bi bi-translate me-1"></i>한국어 ${currentModel.koreanSupport ? '지원' : '미지원'}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                  <button type="button" id="favorite-btn" class="btn ${currentModel.isFavorited ? 'btn-danger' : 'btn-outline-danger'} btn-sm px-3">
+                    <i class="bi ${currentModel.isFavorited ? 'bi-heart-fill' : 'bi-heart'} me-1"></i>
+                    <span>${currentModel.isFavorited ? '즐겨찾기 됨' : '즐겨찾기'}</span>
+                  </button>
+                  ${currentModel.siteUrl
+                    ? `<a href="${escapeHtml(currentModel.siteUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm px-3" style="background:var(--accent-color,#4154f1);border-color:var(--accent-color,#4154f1);">공식 사이트 <i class="bi bi-box-arrow-up-right ms-1"></i></a>`
+                    : ''}
+                </div>
+              </div>
+
+              <p class="mt-4 mb-3 fs-6" style="line-height:1.7;">${escapeHtml(currentModel.description || '')}</p>
+              <div class="mb-4">${tagsHtml}</div>
+
+              <div class="row g-3 mb-4">
+                <div class="col-md-3 col-6">
+                  <div class="spec-box">
+                    <div class="spec-label">요금 안내</div>
+                    <div class="spec-value">${escapeHtml(currentModel.priceText || priceRange)}</div>
+                  </div>
+                </div>
+                <div class="col-md-3 col-6">
+                  <div class="spec-box">
+                    <div class="spec-label">월 가격 범위 (USD)</div>
+                    <div class="spec-value">${escapeHtml(priceRange)}</div>
+                  </div>
+                </div>
+                <div class="col-md-3 col-6">
+                  <div class="spec-box">
+                    <div class="spec-label">지원 입력 형태</div>
+                    <div class="spec-value">${escapeHtml(currentModel.inputTypes || '텍스트')}</div>
+                  </div>
+                </div>
+                <div class="col-md-3 col-6">
+                  <div class="spec-box">
+                    <div class="spec-label">추천 사용 규모</div>
+                    <div class="spec-value">${escapeHtml(scaleHtml)}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="p-3 rounded-3 border bg-success-subtle bg-opacity-10 h-100">
+                    <h3 class="h6 fw-bold text-success mb-2"><i class="bi bi-check-circle me-1"></i>주요 강점</h3>
+                    <p class="small mb-0 text-dark">${escapeHtml(currentModel.strengths || '등록된 정보가 없습니다.')}</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="p-3 rounded-3 border bg-warning-subtle bg-opacity-10 h-100">
+                    <h3 class="h6 fw-bold text-warning-emphasis mb-2"><i class="bi bi-exclamation-circle me-1"></i>한계점 및 참고사항</h3>
+                    <p class="small mb-0 text-dark">${escapeHtml(currentModel.limitations || '등록된 정보가 없습니다.')}</p>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+
+          const favBtn = document.getElementById('favorite-btn');
+          if (favBtn) {
+            favBtn.addEventListener('click', async () => {
+              if (!currentUser) {
+                alert('즐겨찾기를 사용하려면 로그인이 필요합니다.');
+                location.href = `/pages/auth/login.html?redirect=${encodeURIComponent(location.pathname + location.search)}`;
+                return;
+              }
+              try {
+                if (currentModel.isFavorited) {
+                  const delRes = await fetch(`/api/v1/favorites/${modelId}`, { method: 'DELETE', credentials: 'same-origin' });
+                  if (delRes.ok) {
+                    currentModel.isFavorited = false;
+                  } else {
+                    alert('즐겨찾기 해제 API가 아직 준비 중이거나 오류가 발생했습니다.');
+                  }
+                } else {
+                  const addRes = await fetch('/api/v1/favorites', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ modelId })
+                  });
+                  if (addRes.ok) {
+                    currentModel.isFavorited = true;
+                  } else {
+                    alert('즐겨찾기 추가 API가 아직 준비 중이거나 오류가 발생했습니다.');
+                  }
+                }
+                favBtn.className = `btn ${currentModel.isFavorited ? 'btn-danger' : 'btn-outline-danger'} btn-sm px-3`;
+                favBtn.innerHTML = `<i class="bi ${currentModel.isFavorited ? 'bi-heart-fill' : 'bi-heart'} me-1"></i><span>${currentModel.isFavorited ? '즐겨찾기 됨' : '즐겨찾기'}</span>`;
+              } catch (_) {
+                alert('즐겨찾기 처리 중 오류가 발생했습니다.');
+              }
+            });
+          }
+
+          reviewSection.classList.remove('d-none');
+          if (!currentUser) {
+            reviewLoginPrompt.classList.remove('d-none');
+            reviewForm.classList.add('d-none');
+            loginRedirectLink.href = `/pages/auth/login.html?redirect=${encodeURIComponent(location.pathname + location.search)}`;
+          } else {
+            reviewLoginPrompt.classList.add('d-none');
+            reviewForm.classList.remove('d-none');
+            if (currentModel.myReview) {
+              myReviewId = currentModel.myReview.reviewId;
+              setRating(currentModel.myReview.rating);
+              reviewContent.value = currentModel.myReview.content;
+              charCount.textContent = `${reviewContent.value.length} / 200자`;
+              reviewSubmitBtn.textContent = '내 리뷰 수정';
+              deleteMyReviewBtn.classList.remove('d-none');
+            } else {
+              myReviewId = null;
+              setRating(5);
+              reviewContent.value = '';
+              charCount.textContent = '0 / 200자';
+              reviewSubmitBtn.textContent = '리뷰 등록';
+              deleteMyReviewBtn.classList.add('d-none');
+            }
+          }
+        } catch (_) {
+          detailRoot.innerHTML = `<div class="detail-card text-center py-5 text-danger">서버와 통신 중 오류가 발생했습니다.</div>`;
+        }
+      }
+
+      async function loadReviews() {
+        try {
+          const res = await fetch(`/api/v1/models/${modelId}/reviews?page=${reviewPage}&size=10`);
+          const json = await res.json();
+          if (!res.ok || !json.success) return;
+
+          const { items, totalPages, page } = json.data;
+          if (!items || items.length === 0) {
+            reviewList.innerHTML = `<p class="text-center text-muted small py-4 mb-0">아직 작성된 리뷰가 없습니다. 첫 번째 리뷰를 남겨보세요!</p>`;
+            reviewPager.innerHTML = '';
+            return;
+          }
+
+          reviewList.innerHTML = items.map(r => {
+            const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+            const isMine = currentUser && currentUser.userId === r.userId;
+            return `
+              <div class="review-item">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <div>
+                    <strong class="me-2">${escapeHtml(r.username)}</strong>
+                    ${isMine ? '<span class="badge border small" style="background:#f4f6ff;color:var(--accent-color,#4154f1);">내 리뷰</span>' : ''}
+                    <span class="text-warning ms-1">${stars}</span>
+                  </div>
+                  <span class="small text-muted">${formatDate(r.createdAt)}</span>
+                </div>
+                <p class="mb-0 small text-dark" style="white-space:pre-line;">${escapeHtml(r.content)}</p>
+              </div>`;
+          }).join('');
+
+          if (totalPages > 1) {
+            let html = '';
+            for (let i = 1; i <= totalPages; i++) {
+              html += `<li><button type="button" class="${i === page ? 'active' : ''}" data-page="${i}">${i}</button></li>`;
+            }
+            reviewPager.innerHTML = html;
+            reviewPager.querySelectorAll('button[data-page]').forEach(btn => {
+              btn.addEventListener('click', () => {
+                reviewPage = Number(btn.dataset.page);
+                loadReviews();
+              });
+            });
+          } else {
+            reviewPager.innerHTML = '';
+          }
+        } catch (_) {}
+      }
+
+      function showReviewAlert(msg, type = 'danger') {
+        reviewFormAlert.className = `alert alert-${type} py-2 small mb-2`;
+        reviewFormAlert.textContent = msg;
+      }
+
+      reviewForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        reviewFormAlert.className = 'alert d-none py-2 small mb-2';
+        const content = reviewContent.value.trim();
+        if (!content || content.length > 200) {
+          showReviewAlert('리뷰 내용은 1자 이상 200자 이내로 입력해 주세요.');
+          return;
+        }
+
+        reviewSubmitBtn.disabled = true;
+        try {
+          const url = myReviewId ? `/api/v1/reviews/${myReviewId}` : `/api/v1/models/${modelId}/reviews`;
+          const method = myReviewId ? 'PUT' : 'POST';
+          const res = await fetch(url, {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({ rating: selectedRating, content })
+          });
+          const json = await res.json().catch(() => ({}));
+          if (!res.ok || !json.success) {
+            showReviewAlert(json.error?.message || '리뷰 저장에 실패했습니다.');
+            return;
+          }
+          showReviewAlert(myReviewId ? '리뷰가 수정되었습니다.' : '리뷰가 등록되었습니다.', 'success');
+          await loadModelDetail();
+          await loadReviews();
+        } catch (_) {
+          showReviewAlert('서버 통신 중 오류가 발생했습니다.');
+        } finally {
+          reviewSubmitBtn.disabled = false;
+        }
+      });
+
+      deleteMyReviewBtn.addEventListener('click', async () => {
+        if (!myReviewId) return;
+        if (!confirm('작성한 리뷰를 삭제할까요?')) return;
+        try {
+          const res = await fetch(`/api/v1/reviews/${myReviewId}`, {
+            method: 'DELETE',
+            credentials: 'same-origin'
+          });
+          if (!res.ok) {
+            showReviewAlert('리뷰 삭제에 실패했습니다.');
+            return;
+          }
+          myReviewId = null;
+          await loadModelDetail();
+          await loadReviews();
+        } catch (_) {
+          showReviewAlert('서버 통신 중 오류가 발생했습니다.');
+        }
+      });
+
+      await loadCurrentUser();
+      await loadModelDetail();
+      await loadReviews();
+    })();
+  </script>
+</body>
+</html>
