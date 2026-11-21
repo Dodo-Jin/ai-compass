@@ -19,6 +19,7 @@
 /client/pages/mypage/index.html     @byeongokchoi
 /client/pages/mypage/favorites.html @jungwukc
 /client/pages/mypage/library.html   @Dodo-Jin
+/.github/workflows/  @jungwukc
 
 # 즐겨찾기 비교 화면 (C)
 /client/assets/js/favorite/     @jungwukc
