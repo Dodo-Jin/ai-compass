@@ -3,7 +3,7 @@
 import { h, setBusy, validatePipeline, errorMessage } from './util.js';
 import { createCanvas } from './canvas.js';
 import { sendChat, listTools, getPipeline, createPipeline, updatePipeline, USE_MOCK } from './pipeline-api.js';
-import { showMockUser } from './mock-user.js';
+import { showHeaderUser, loginLink, redirectIfUnauthorized } from './session-user.js';
 
 const $ = (id) => document.getElementById(id);
 const log = $('chat-log');
@@ -26,7 +26,10 @@ let savedId = null; // 이미 저장했거나 불러온 파이프라인이면 id
 let dirty = false; // 저장하지 않은 변경이 있는지
 let busy = false;
 
-showMockUser();
+// 챗봇은 로그인한 사용자만 쓸 수 있다(서버도 401). 비로그인이면 안내를 먼저 보여준다
+showHeaderUser().then((user) => {
+  if (!user) addBubble('bot', '챗봇은 로그인한 뒤에 사용할 수 있어요. ', loginLink());
+});
 if (USE_MOCK) $('mock-badge').hidden = false;
 
 const canvas = createCanvas($('canvas'), {
@@ -71,6 +74,10 @@ async function request(message) {
     showRecommendation(res);
   } catch (err) {
     typing.classList.add('chat-error');
+    if (err.status === 401) {
+      typing.replaceChildren('챗봇은 로그인한 뒤에 사용할 수 있어요. ', loginLink());
+      return;
+    }
     typing.replaceChildren(
       `추천을 불러오지 못했어요. ${errorMessage(err)} `,
       h('button', { type: 'button', class: 'btn btn-link btn-sm p-0 align-baseline', onclick: () => { typing.remove(); request(message); } }, '다시 시도'),
@@ -160,7 +167,8 @@ saveForm.addEventListener('submit', async (e) => {
     dirty = false;
     showSaveMsg('success', wasSaved ? '수정 내용을 저장했어요. ' : '보관함에 저장했어요. ', h('a', { class: 'alert-link', href: '/pages/mypage/library.html' }, '보관함 보기 →'));
   } catch (err) {
-    showSaveMsg('danger', `저장하지 못했어요. ${errorMessage(err)}`);
+    if (err.status === 401) showSaveMsg('danger', '저장하려면 로그인이 필요해요. ', loginLink());
+    else showSaveMsg('danger', `저장하지 못했어요. ${errorMessage(err)}`);
   } finally {
     setBusy(saveBtn, false);
     updateSaveLabel();
@@ -201,6 +209,6 @@ if (idParam != null) {
         updateSaveLabel();
         addBubble('bot', h('div', {}, `‘${p.title}’ 파이프라인을 불러왔어요.`), h('div', { class: 'sub' }, '오른쪽에서 이어서 수정하거나, 새 조합을 물어볼 수 있어요.'));
       })
-      .catch((err) => showSaveMsg('danger', `파이프라인을 불러오지 못했어요. ${errorMessage(err)} `, h('a', { class: 'alert-link', href: '/pages/mypage/library.html' }, '보관함으로')));
+      .catch((err) => redirectIfUnauthorized(err) || showSaveMsg('danger', `파이프라인을 불러오지 못했어요. ${errorMessage(err)} `, h('a', { class: 'alert-link', href: '/pages/mypage/library.html' }, '보관함으로')));
   }
 }

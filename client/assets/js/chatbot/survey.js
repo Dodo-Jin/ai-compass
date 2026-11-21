@@ -3,7 +3,7 @@
 import { h, avatar, setBusy, errorMessage } from './util.js';
 import { SURVEY, labelOf } from './survey-options.js';
 import { recommendBySurvey, createPipeline, USE_MOCK } from './pipeline-api.js';
-import { showMockUser } from './mock-user.js';
+import { showHeaderUser, loginLink } from './session-user.js';
 
 const $ = (id) => document.getElementById(id);
 const form = $('survey-form');
@@ -14,7 +14,7 @@ const saveBtn = $('save-btn');
 let current = null; // { result, selection, saved } — 지금 보이는 추천 결과
 let busy = false;
 
-showMockUser();
+showHeaderUser(); // 설문 추천은 로그인 없이 쓸 수 있고, 보관함에 저장할 때만 로그인이 필요하다
 if (USE_MOCK) $('mock-badge').hidden = false;
 
 // ---------------------------------------------------------------- 선택지
@@ -145,7 +145,8 @@ saveBtn.addEventListener('click', async () => {
     current.saved = true;
     $('save-msg').replaceChildren('보관함에 저장했어요. ', h('a', { href: '/pages/mypage/library.html' }, '보관함 보기 →'));
   } catch (err) {
-    showMsg($('save-msg'), 'danger', `저장하지 못했어요. ${errorMessage(err)}`);
+    if (err.status === 401) showMsg($('save-msg'), 'danger', '저장하려면 로그인이 필요해요. ', loginLink());
+    else showMsg($('save-msg'), 'danger', `저장하지 못했어요. ${errorMessage(err)}`);
   } finally {
     setBusy(saveBtn, false);
     updateSaveButton();

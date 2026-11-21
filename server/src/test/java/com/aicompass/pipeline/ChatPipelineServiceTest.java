@@ -13,8 +13,8 @@ import org.junit.jupiter.api.Test;
 class ChatPipelineServiceTest {
 
     static final Map<Integer, ChatPipelineService.Model> MODELS = Map.of(
-            1, new ChatPipelineService.Model(1, "ChatGPT", "텍스트", null),
-            4, new ChatPipelineService.Model(4, "Midjourney", "이미지", null));
+            1, new ChatPipelineService.Model(1, "ChatGPT", "텍스트", null, null),
+            4, new ChatPipelineService.Model(4, "Midjourney", "이미지", null, null));
     static final ObjectMapper OM = new ObjectMapper();
 
     @Test
@@ -35,7 +35,7 @@ class ChatPipelineServiceTest {
         Result r = ChatPipelineService.toResult("{\"reply\":\"더 알려주세요\",\"blocks\":[]}", MODELS, OM);
         assertEquals(0, r.blocks().size());
         assertEquals("나만의 AI 파이프라인", r.title());
-        assertEquals(502, assertThrows(ChatException.class, () -> ChatPipelineService.toResult("죄송합니다", MODELS, OM)).status);
-        assertEquals(400, assertThrows(ChatException.class, () -> new ChatPipelineService(null, OM, "http://x", "k", "m").generate(" ")).status);
+        assertEquals(502, assertThrows(ChatException.class, () -> ChatPipelineService.toResult("죄송합니다", MODELS, OM)).getStatus().value());
+        assertEquals(400, assertThrows(ChatException.class, () -> new ChatPipelineService(null, OM, "http://x", "k", "m").generate(" ")).getStatus().value());
     }
 }

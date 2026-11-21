@@ -1,56 +1,83 @@
 package com.aicompass.pipeline;
 
+import com.aicompass.common.ApiResponse;
+import com.aicompass.common.LoginUser;
+import jakarta.servlet.http.HttpSession;
 import java.util.Map;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-// 담당 B. 이 패키지(com.aicompass.pipeline) 안에서 controller/service/repository/entity 를 자유롭게 추가
+// 담당 B. 챗봇(로그인 필요), 설문 추천(로그인 없이 사용), 파이프라인 보관함(로그인 필요). 오류는 ApiException → GlobalExceptionHandler
 @RestController
 @RequestMapping("/api/v1/pipelines")
 public class PipelineController {
 
     private final SurveyRecommendService survey;
     private final ChatPipelineService chat;
+    private final PipelineService pipelines;
 
-    public PipelineController(SurveyRecommendService survey, ChatPipelineService chat) {
+    public PipelineController(SurveyRecommendService survey, ChatPipelineService chat, PipelineService pipelines) {
         this.survey = survey;
         this.chat = chat;
+        this.pipelines = pipelines;
     }
+
+    // ---------------------------------------------------------------- 챗봇(로그인 필요)·설문(로그인 없이) — 둘 다 저장 안 함
 
     public record GenerateRequest(String message) {}
 
-    /** 챗봇. 요청 문장으로 파이프라인(툴 조합)을 만들어 돌려준다(저장 안 함). 오류는 { message } */
+    /** AI 호출 비용·무료 한도를 보호하려고 로그인한 사용자만 쓸 수 있다 */
     @PostMapping("/generate")
-    public ResponseEntity<?> generate(@RequestBody GenerateRequest req) {
-        try {
-            return ResponseEntity.ok(chat.generate(req.message()));
-        } catch (ChatPipelineService.ChatException e) {
-            return ResponseEntity.status(e.status).body(Map.of("message", e.getMessage()));
-        }
-    }
-
-    @GetMapping
-    public Map<String, String> ping() {
-        return Map.of("ok", "pipeline");
+    public ApiResponse<ChatPipelineService.Result> generate(@RequestBody GenerateRequest req, HttpSession session) {
+        LoginUser.require(session);
+        return ApiResponse.ok(chat.generate(req.message()));
     }
 
     public record SurveyRequest(String job, String usage, String budget) {}
 
-    /** 설문 추천. 응답은 클라이언트(pipeline-api.js)가 읽는 평평한 JSON, 오류는 { message } */
     @PostMapping("/recommend-by-survey")
-    public ResponseEntity<?> recommendBySurvey(@RequestBody SurveyRequest req) {
-        try {
-            SurveyRecommendService.Result r = survey.recommend(req.job(), req.usage(), req.budget());
-            if (r == null) {
-                return ResponseEntity.status(404).body(Map.of("message", "조건에 맞는 AI 툴을 찾지 못했어요. 다른 조건으로 시도해 보세요."));
-            }
-            return ResponseEntity.ok(r);
-        } catch (SurveyRecommendService.InvalidSurveyException e) {
-            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
-        }
+    public ApiResponse<SurveyRecommendService.Result> recommendBySurvey(@RequestBody SurveyRequest req) {
+        return ApiResponse.ok(survey.recommend(req.job(), req.usage(), req.budget()));
+    }
+
+    // ---------------------------------------------------------------- 보관함 (로그인 필요, 본인 것만)
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<Map<String, Object>>> create(@RequestBody PipelineService.SaveRequest req, HttpSession session) {
+        return ResponseEntity.status(201).body(ApiResponse.ok(pipelines.create(LoginUser.require(session), req)));
+    }
+
+    @GetMapping
+    public ApiResponse<Map<String, Object>> list(
+            @RequestParam(name = "q", required = false) String q,
+            @RequestParam(name = "sort", defaultValue = "latest") String sort,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "size", defaultValue = "12") int size,
+            HttpSession session) {
+        return ApiResponse.ok(pipelines.list(LoginUser.require(session), q, sort, page, size));
+    }
+
+    @GetMapping("/{pipelineId}")
+    public ApiResponse<Map<String, Object>> get(@PathVariable int pipelineId, HttpSession session) {
+        return ApiResponse.ok(pipelines.get(LoginUser.require(session), pipelineId));
+    }
+
+    @PutMapping("/{pipelineId}")
+    public ApiResponse<Map<String, Object>> update(@PathVariable int pipelineId, @RequestBody PipelineService.SaveRequest req, HttpSession session) {
+        return ApiResponse.ok(pipelines.update(LoginUser.require(session), pipelineId, req));
+    }
+
+    @DeleteMapping("/{pipelineId}")
+    public ResponseEntity<Void> delete(@PathVariable int pipelineId, HttpSession session) {
+        pipelines.delete(LoginUser.require(session), pipelineId);
+        return ResponseEntity.noContent().build();
     }
 }
