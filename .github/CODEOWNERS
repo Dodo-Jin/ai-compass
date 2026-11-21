@@ -11,6 +11,12 @@
 /client/pages/trend/     @jungwukc
 /server/src/main/java/com/aicompass/trend/    @jungwukc
 /server/src/main/java/com/aicompass/favorite/ @jungwukc
+/client/assets/js/trend/  @jungwukc
+
+# 공용 코드
+/server/src/main/java/com/aicompass/common/   @jungwukc
+/client/assets/js/common/api.js               @jungwukc
 /client/pages/mypage/index.html     @byeongokchoi
 /client/pages/mypage/favorites.html @jungwukc
 /client/pages/mypage/library.html   @Dodo-Jin
+/.github/workflows/  @jungwukc

@@ -1,0 +1,73 @@
+# 서버 자동 테스트 (공용, 담당 C)
+# PR 을 올리거나 새로 push 할 때마다 server/ 를 Java 21 로 빌드하고 테스트를 돌린다.
+# 결과는 PR 의 머지 버튼 위에 ✅/❌ 로 보이고, 실패하면 오류 요약을 PR 댓글로 남긴다.
+# DB(MySQL) 없이 도는 테스트만 있어서 서버나 DB 설정은 필요 없다.
+name: server-test
+
+on:
+  pull_request:
+  push:
+    branches: [develop, main]
+
+permissions:
+  contents: read
+  pull-requests: write # 실패 요약 댓글
+
+concurrency:
+  group: server-test-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Build and test
+        run: |
+          set -o pipefail
+          chmod +x gradlew
+          ./gradlew test --no-daemon --console=plain 2>&1 | tee build.log
+
+      - name: Comment failure summary on PR
+        if: failure() && github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          {
+            echo "### ❌ 서버 테스트 실패 (\`${GITHUB_HEAD_REF}\` @ ${GITHUB_SHA::7})"
+            echo
+            echo "컴파일 오류(\`error:\`)와 실패한 테스트(\`FAILED\`) 부분만 모았습니다. 전체 기록: ${RUN_URL}"
+            echo
+            echo '```'
+            if [ -f build.log ]; then
+              grep -n -E "error:|FAILED|Exception|expected|Caused by|warning: \[removal\]" build.log | head -60
+              echo "..."
+              tail -25 build.log
+            else
+              echo "build.log 가 없습니다. 실행 기록을 확인해 주세요."
+            fi
+            echo '```'
+          } > comment.md
+          gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body-file comment.md
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: server/build/reports/tests/test
+          if-no-files-found: ignore
+          retention-days: 7
