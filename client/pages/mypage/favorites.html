@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>즐겨찾기 비교 | AI Compass</title>
+  <link href="/assets/vendor/flexstart/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/assets/vendor/flexstart/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="/assets/vendor/flexstart/css/main.css" rel="stylesheet">
+  <link href="/assets/css/common.css" rel="stylesheet">
+  <link href="/assets/css/pipeline.css" rel="stylesheet"><!-- 마이페이지 공용 틀(프로필·탭·패널) 스타일 -->
+  <link href="/assets/css/favorites.css" rel="stylesheet">
+</head>
+<body class="pl-page">
+  <div id="header"></div>
+
+  <main>
+    <div class="pl-title">
+      <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <h1>마이페이지
+          <span id="mock-badge" class="badge text-bg-warning align-middle fs-6 fw-normal ms-2" title="백엔드 연동 전 임시 데이터로 동작 중이에요" hidden>목 데이터</span>
+        </h1>
+        <nav aria-label="현재 위치">
+          <ol class="pl-crumbs"><li><a href="/">Home</a></li><li><a href="/pages/mypage/index.html">My Page</a></li><li aria-current="page">즐겨찾기 비교</li></ol>
+        </nav>
+      </div>
+    </div>
+
+    <div class="container pb-5">
+      <div class="row g-4 align-items-start">
+        <!-- 프로필 (공용 partial) -->
+        <aside class="col-lg-3" aria-label="내 정보 요약">
+          <div id="mypage-profile"></div>
+        </aside>
+
+        <div class="col-lg-9">
+          <div class="pl-panel">
+            <div class="pl-panel-body px-4 px-xl-5 pt-3 pb-4">
+              <div id="mypage-tabs"></div>
+
+              <!-- 내 즐겨찾기 -->
+              <section aria-labelledby="fv-title" class="fv-section">
+                <div class="fv-section-head">
+                  <div>
+                    <h2 id="fv-title" class="fv-h2">내 즐겨찾기 <span id="fv-count" class="fv-accent">–</span></h2>
+                    <p id="fv-hint" class="fv-hint" aria-live="polite">불러오는 중…</p>
+                  </div>
+                  <div class="fv-tools">
+                    <label class="fv-filter">카테고리
+                      <select id="fv-category" class="form-select form-select-sm"><option value="">전체</option></select>
+                    </label>
+                    <a class="pl-btn fv-outline" href="/pages/directory/list.html"><i class="bi bi-plus-lg" aria-hidden="true"></i>디렉토리에서 추가</a>
+                  </div>
+                </div>
+                <div id="fv-chips" class="fv-chips"></div>
+              </section>
+
+              <!-- 스펙 비교표 -->
+              <section aria-labelledby="fv-compare-title" class="fv-section">
+                <div class="fv-section-head">
+                  <h2 id="fv-compare-title" class="fv-h2">스펙 비교표</h2>
+                  <label class="fv-diff-toggle"><input id="fv-diff" type="checkbox" class="form-check-input"> 차이 나는 항목만 보기</label>
+                </div>
+                <div id="fv-compare" aria-live="polite"></div>
+                <p class="fv-note">항목별로 가장 유리한 값에는 이름표(예: 최고 별점)를 붙였어요. 별점은 사용자 리뷰 평균이에요.</p>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="fv-toast" class="fv-toast" role="status" aria-live="polite"></div>
+  <div id="footer"></div>
+
+  <script src="/assets/vendor/flexstart/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/common/layout.js"></script>
+  <script type="module" src="/assets/js/favorite/favorites.js"></script>
+</body>
+</html>
