@@ -62,3 +62,10 @@ await api('/favorites/3', { method: 'DELETE' }); // 204 면 null
 try { await api('/favorites', { method: 'POST', body: { modelId: 3 } }); }
 catch (e) { if (e.status === 401) location.href = '/pages/auth/login.html'; } // e.code, e.message 도 있음
 ```
+
+## 자동 테스트 (GitHub Actions)
+
+PR 을 올리거나 push 하면 `.github/workflows/server-test.yml` 이 서버를 빌드하고 `./gradlew test` 를 돌립니다.
+- 머지 버튼 위에 ✅(통과) / ❌(실패) 가 보입니다. ❌ 이면 머지하지 말고 고쳐 주세요.
+- 실패하면 오류 요약이 PR 댓글로 달립니다. 전체 기록은 PR 의 Checks 탭에서 볼 수 있습니다.
+- DB 없이 도는 테스트만 있어서 MySQL 설정은 필요 없습니다.
