@@ -47,7 +47,8 @@ showHeaderUser().then(async (user) => {
     $('stat-reviews').textContent = '3';
     return;
   }
-  // 작성한 리뷰 수는 A 의 내 리뷰 API 의 totalElements. 즐겨찾기 수는 C 의 API 가 생기면 연결한다(그때까지 –)
+  // 작성한 리뷰 수는 A 의 내 리뷰 API, 즐겨찾기 수는 C 의 즐겨찾기 목록 API 의 totalElements
+  api('/favorites?page=1&size=1').then((r) => { $('stat-favorites').textContent = String(r.totalElements); }).catch(() => {});
   api('/users/me/reviews?page=1&size=1').then((r) => { $('stat-reviews').textContent = String(r.totalElements); }).catch(() => {});
 });
 

@@ -230,20 +230,6 @@ a.home-card:hover .home-icon { background: var(--accent-color, #4154f1); color: 
 .home-more { font-weight: 700; font-size: 14px; color: var(--accent-color, #4154f1); }
 .home-more i { display: inline-block; transition: transform 0.2s ease; }
 a.home-card:hover .home-more i { transform: translateX(4px); }
-.home-card-soon { background: #fafbff; border-style: dashed; box-shadow: none; }
-.home-card-soon .home-icon { background: #eef0f8; color: #8a94b0; }
-.home-card-soon h3 { color: #5b6784; }
-.home-soon {
-  margin-left: 6px;
-  padding: 3px 10px;
-  border-radius: 999px;
-  background: #fff3d6;
-  color: #a06a00;
-  font-family: var(--default-font, 'Roboto', sans-serif);
-  font-size: 12px;
-  font-weight: 700;
-  vertical-align: middle;
-}
 
 /* ---------- 이용 방법 ---------- */
 .home-steps {
