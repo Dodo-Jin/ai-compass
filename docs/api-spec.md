@@ -53,6 +53,16 @@
 - `GET /favorites/compare?modelIds=1,2,3`(서로 다른 2~4개, 요청 순서대로): `{ items: [{ modelId, name, category, description, logoUrl, siteUrl, tags[], pricingType, priceText, priceMinUsd, priceMaxUsd, inputTypes[], koreanSupport, strengths, limitations, averageRating, reviewCount, favoriteCount, isFavorited }] }`. 개수·형식 오류 400, 없는 툴 404 `MODEL_NOT_FOUND`
 - 즐겨찾기 목록·비교표는 `AI_Models` 확장 컬럼(`db/migrations/001_add_model_columns.sql`)이 필요
 
+## 트렌드 (C)
+
+- `GET /trends/rankings?period=realtime&category=&page=1&size=10`(size 최대 100). 로그인 없이 사용 (로그인하면 `isFavorited` 표시)
+- 응답: `{ items: [{ rank, rankChange, isNew, modelId, name, category, tags[], logoUrl, trendScore, searchCount, favoriteCount, pipelineCount, pipelineRate, isFavorited }], categories[], period, page, size, totalElements, totalPages, updatedAt }`. 최대 100위까지, `categories`는 툴이 많은 순(탭용)
+- 점수(0~100) = 조회수(`AI_Models.search_count`) 40% + 즐겨찾기 수 40% + 파이프라인 사용 수 20%. 각각 1위를 100으로 환산. 요청할 때 계산하며 `ranking_score` 컬럼은 쓰지 않음
+- `period`: `realtime` 전체 누적(변동은 하루 전과 비교), `weekly` 최근 7일(그 전 7일과 비교), `monthly` 최근 30일(그 전 30일과 비교). 조회수는 날짜 기록이 없어 모든 기간에 누적값을 씀. 그 밖의 값은 400 `INVALID_REQUEST`
+- `rankChange`: 양수면 상승, 음수면 하락. `isNew`: 처음 시드 이후 7일 안에 추가된 툴(이때 `rankChange`는 0)
+- `pipelineRate`: 기간 안에 만든 파이프라인 중 그 툴을 쓴 비율(%). 파이프라인 블록의 `modelId`로 셈
+- 최신 AI 동향·급상승 키워드는 API 없이 `client/assets/js/trend/data/news.json`을 직접 고침
+
 ## 메모
 
 - 파이프라인은 `Pipelines.block_data`(TEXT)에 `blocks` 배열을 JSON 문자열로 저장하고, API에서는 배열로 주고받음
