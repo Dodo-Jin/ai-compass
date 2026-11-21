@@ -272,7 +272,7 @@ async function renderCompare() {
         logo(m, 44),
         h('div', { class: 'fv-head-text' },
           h('strong', {}, m.name),
-          h('a', { href: `/pages/directory/detail.html?modelId=${m.modelId}` }, '상세 보기')),
+          h('a', { href: `/pages/directory/detail.html?id=${m.modelId}` }, '상세 보기')),
         h('button', {
           type: 'button', class: 'fv-head-remove', 'aria-label': `${m.name} 비교에서 빼기`, title: '비교에서 빼기',
           onclick: () => toggle(m.modelId),
