@@ -1,7 +1,7 @@
 // 트렌드 페이지 화면 (담당 C): 실시간 AI 랭킹 Top 100 + 최신 AI 동향
-import { fetchRankings, fetchNews, setFavorite } from './trend-api.js';
+import { fetchRankings, fetchNews, setFavorite, USE_MOCK } from './trend-api.js';
+import { api } from '../common/api.js';
 
-const CATEGORIES = ['전체', '챗봇', '이미지', '영상', '음성·음악', '코딩'];
 const PERIODS = [
   { value: 'realtime', label: '실시간' },
   { value: 'weekly', label: '주간' },
@@ -10,7 +10,8 @@ const PERIODS = [
 const PAGE_SIZE = 10;
 const LOGO_COLORS = ['#10a37f', '#c96442', '#4f7be8', '#1f6f78', '#2b2f3a', '#5a4fcf', '#d1495b', '#3c4459', '#b4520f', '#0f766e'];
 
-const state = { period: 'realtime', category: '전체', page: 1, total: 0, loading: false };
+// category '' = 전체. categories 는 서버가 준 카테고리 목록 (툴이 많은 순)
+const state = { period: 'realtime', category: '', categories: [], page: 1, total: 0, loading: false };
 
 const $ = (sel) => document.querySelector(sel);
 const els = {
@@ -46,7 +47,8 @@ function timeAgo(iso) {
 function formatUpdated(iso) {
   const d = new Date(iso);
   const pad = (n) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())} 기준 · 매시 정각 갱신`;
+  const note = { realtime: '하루 전과 비교', weekly: '최근 7일 · 그 전 7일과 비교', monthly: '최근 30일 · 그 전 30일과 비교' }[state.period];
+  return `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())} 기준 · ${note}`;
 }
 
 const logoColor = (name) => LOGO_COLORS[[...name].reduce((a, c) => a + c.charCodeAt(0), 0) % LOGO_COLORS.length];
@@ -73,18 +75,20 @@ function rowHtml(item) {
     <li class="rank-row" data-model-id="${item.modelId}">
       <span class="rank-no ${item.rank <= 3 ? 'top' : ''}">${item.rank}</span>
       ${changeBadge(item)}
-      <span class="rank-logo" style="background:${logoColor(item.name)}" aria-hidden="true">${name.charAt(0)}</span>
+      ${item.logoUrl
+        ? `<img class="rank-logo img" src="${escapeHtml(item.logoUrl)}" alt="" loading="lazy">`
+        : `<span class="rank-logo" style="background:${logoColor(item.name)}" aria-hidden="true">${name.charAt(0)}</span>`}
       <div class="rank-info">
-        <a class="rank-name" href="/pages/directory/detail.html?modelId=${item.modelId}">${name}</a>
+        <a class="rank-name" href="/pages/directory/detail.html?id=${item.modelId}">${name}</a>
         <div class="rank-tags">${tags}</div>
       </div>
       <div class="rank-score">
         <div class="score-bar" role="img" aria-label="트렌드 점수 ${item.trendScore}점"><span style="width:${item.trendScore}%"></span></div>
-        <div class="score-meta">검색 ${formatCount(item.searchCount)} · 찜 ${formatCount(item.favoriteCount)} · 채택 ${item.pipelineRate}%</div>
+        <div class="score-meta">조회 ${formatCount(item.searchCount)} · 찜 ${formatCount(item.favoriteCount)} · 채택 ${item.pipelineRate}%</div>
       </div>
-      <button type="button" class="fav-btn ${item.isFavorite ? 'on' : ''}" aria-pressed="${item.isFavorite}"
-        aria-label="${name} 즐겨찾기 ${item.isFavorite ? '해제' : '추가'}">
-        <i class="bi ${item.isFavorite ? 'bi-bookmark-fill' : 'bi-bookmark'}" aria-hidden="true"></i>
+      <button type="button" class="fav-btn ${item.isFavorited ? 'on' : ''}" aria-pressed="${item.isFavorited}"
+        aria-label="${name} 즐겨찾기 ${item.isFavorited ? '해제' : '추가'}">
+        <i class="bi ${item.isFavorited ? 'bi-bookmark-fill' : 'bi-bookmark'}" aria-hidden="true"></i>
       </button>
     </li>`;
 }
@@ -97,11 +101,16 @@ async function loadRankings({ append = false } = {}) {
 
   try {
     const res = await fetchRankings({ period: state.period, category: state.category, page: state.page, size: PAGE_SIZE });
-    state.total = res.total;
+    state.total = res.totalElements ?? 0;
+    if (res.categories && res.categories.join() !== state.categories.join()) {
+      state.categories = res.categories;
+      renderControls();
+    }
     els.updated.textContent = formatUpdated(res.updatedAt);
     const html = res.items.map(rowHtml).join('');
     if (append) els.list.insertAdjacentHTML('beforeend', html);
     else els.list.innerHTML = html || '<li class="rank-empty">이 카테고리에는 아직 순위가 없어요.</li>';
+    fallbackBrokenLogos();
 
     const shown = els.list.querySelectorAll('.rank-row').length;
     els.more.hidden = shown >= state.total;
@@ -122,9 +131,10 @@ function renderControls() {
     (p) => `<button type="button" data-period="${p.value}" aria-pressed="${p.value === state.period}"
       class="${p.value === state.period ? 'active' : ''}">${p.label}</button>`,
   ).join('');
-  els.tabs.innerHTML = CATEGORIES.map(
-    (c) => `<button type="button" role="tab" data-category="${escapeHtml(c)}" aria-selected="${c === state.category}"
-      class="${c === state.category ? 'active' : ''}">${escapeHtml(c)}</button>`,
+  const tabs = [{ value: '', label: '전체' }, ...state.categories.map((c) => ({ value: c, label: c }))];
+  els.tabs.innerHTML = tabs.map(
+    (t) => `<button type="button" role="tab" data-category="${escapeHtml(t.value)}" aria-selected="${t.value === state.category}"
+      class="${t.value === state.category ? 'active' : ''}">${escapeHtml(t.label)}</button>`,
   ).join('');
 }
 
@@ -140,7 +150,7 @@ function bindEvents() {
 
   els.tabs.addEventListener('click', (e) => {
     const btn = e.target.closest('button[data-category]');
-    if (!btn || btn.dataset.category === state.category) return;
+    if (!btn || btn.dataset.category === state.category) return; // '' = 전체
     state.category = btn.dataset.category;
     state.page = 1;
     renderControls();
@@ -166,7 +176,7 @@ function bindEvents() {
       await setFavorite(modelId, next);
       showToast(next ? `${name}을(를) 즐겨찾기에 추가했어요` : `${name}을(를) 즐겨찾기에서 뺐어요`);
     } catch (err) {
-      console.error(err);
+      if (err.status !== 401) console.error(err); // 비로그인은 안내 문구로 충분
       setFavButton(btn, name, !next);
       showToast(err.status === 401 ? '즐겨찾기는 로그인 후 사용할 수 있어요' : '즐겨찾기를 저장하지 못했어요. 잠시 후 다시 시도해 주세요');
     } finally {
@@ -180,6 +190,39 @@ function setFavButton(btn, name, on) {
   btn.setAttribute('aria-pressed', String(on));
   btn.setAttribute('aria-label', `${name} 즐겨찾기 ${on ? '해제' : '추가'}`);
   btn.querySelector('i').className = `bi ${on ? 'bi-bookmark-fill' : 'bi-bookmark'}`;
+}
+
+// 로고 주소가 열리지 않으면 첫 글자 아이콘으로 바꾼다
+function fallbackBrokenLogos() {
+  for (const img of els.list.querySelectorAll('img.rank-logo:not([data-checked])')) {
+    img.dataset.checked = '1';
+    const swap = () => {
+      const name = img.closest('.rank-row').querySelector('.rank-name').textContent;
+      const span = document.createElement('span');
+      span.className = 'rank-logo';
+      span.setAttribute('aria-hidden', 'true');
+      span.style.background = logoColor(name);
+      span.textContent = name.charAt(0);
+      img.replaceWith(span);
+    };
+    if (img.complete && img.naturalWidth === 0) swap();
+    else img.addEventListener('error', swap, { once: true });
+  }
+}
+
+// 헤더의 "로그인" 칸에 사용자 이름 (다른 페이지와 같은 방식). 비로그인이면 그대로 둔다
+async function showHeaderUser() {
+  if (USE_MOCK) return;
+  try {
+    const [user] = await Promise.all([api('/users/me'), window.layoutReady]);
+    const link = document.getElementById('header-user');
+    if (user && link) {
+      link.querySelector('.pl-user-name').textContent = user.username;
+      link.setAttribute('href', '/pages/mypage/index.html');
+    }
+  } catch {
+    // 비로그인(401) 또는 서버 오류: 헤더는 기본 "로그인" 그대로
+  }
 }
 
 // ---------- 최신 AI 동향 ----------
@@ -222,3 +265,4 @@ renderControls();
 bindEvents();
 loadRankings();
 loadNews();
+showHeaderUser();
