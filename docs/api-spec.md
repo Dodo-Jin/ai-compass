@@ -30,7 +30,7 @@
 | DELETE | /api/v1/reviews/{reviewId} | 리뷰 삭제 (작성자만) | A |
 | GET | /api/v1/users/me/reviews | 내가 쓴 리뷰 목록 | A |
 | POST | /api/v1/pipelines/recommend-by-survey | 설문으로 AI 툴 1개 추천 (저장 안 함). 아래 메모 참고 | B |
-| POST | /api/v1/pipelines/generate | 챗봇 요청으로 파이프라인 결과 생성 (저장 안 함). 아래 메모 참고 | B |
+| POST | /api/v1/pipelines/generate | 챗봇 요청으로 파이프라인 결과 생성 (저장 안 함, 로그인 필요). 아래 메모 참고 | B |
 | POST | /api/v1/pipelines | 생성한 파이프라인 저장 (title, blocks) | B |
 | GET | /api/v1/pipelines | 파이프라인 보관함 목록 (q, sort=latest\|oldest\|title, page, size) | B |
 | GET | /api/v1/pipelines/{pipelineId} | 파이프라인 상세 (blocks에 툴 이름 포함) | B |
@@ -53,6 +53,6 @@
 - `generate` 요청: `{ "message": "..." }` (최대 500자). 응답(200): `{ title, reply, blocks: [{ modelId, order, purpose, modelName, category, logoUrl }] }`. 요청에 맞는 툴이 없으면 `blocks`는 빈 배열
 - `generate` 오류: 400 메시지 비어 있음/너무 김, 429 AI 요청 한도, 502 AI 오류·응답 해석 실패, 503 AI 키 미설정/등록된 툴 없음, 504 AI 응답 지연
 - 챗봇 AI는 OpenAI 호환 API이고 `.env`의 `AI_API_KEY`, `AI_BASE_URL`, `AI_MODEL`로 설정. 응답의 modelId는 `AI_Models`에 있는 것만 통과
-- 파이프라인 보관함(`POST/GET/PUT/DELETE /pipelines...`)은 로그인 필요(401 `LOGIN_REQUIRED`)이고 본인 것만 다룸. 남의 파이프라인이나 없는 id는 모두 404 `PIPELINE_NOT_FOUND`. `generate`, `recommend-by-survey`는 로그인 없이 사용
+- 파이프라인 보관함(`POST/GET/PUT/DELETE /pipelines...`)은 로그인 필요(401 `LOGIN_REQUIRED`)이고 본인 것만 다룸. 남의 파이프라인이나 없는 id는 모두 404 `PIPELINE_NOT_FOUND`. `generate`(챗봇)도 로그인 필요(AI 호출 비용·한도 보호), `recommend-by-survey`만 로그인 없이 사용
 - 보관함 요청 `{ title(1~100자), blocks: [{ modelId, purpose?(200자 이내) }] }`(1~20개, 순서는 배열 순서). 없는 modelId는 400 `MODEL_NOT_FOUND`. 응답 블록에는 `order`, `modelName`, `category`, `logoUrl`이 함께 옴(삭제된 툴은 null). 생성 201, 삭제 204
 - `recommend-by-survey` 응답의 `priceText`는 `AI_Models.price_text`(없으면 가격 범위로 생성), `logoUrl`은 `AI_Models.logo_url`. 일치하는 툴이 없으면 404 `MODEL_NOT_FOUND`

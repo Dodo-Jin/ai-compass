@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-// 담당 B. 챗봇·설문 추천(로그인 없이 사용)과 파이프라인 보관함(로그인 필요). 오류는 ApiException → GlobalExceptionHandler
+// 담당 B. 챗봇(로그인 필요), 설문 추천(로그인 없이 사용), 파이프라인 보관함(로그인 필요). 오류는 ApiException → GlobalExceptionHandler
 @RestController
 @RequestMapping("/api/v1/pipelines")
 public class PipelineController {
@@ -30,12 +30,14 @@ public class PipelineController {
         this.pipelines = pipelines;
     }
 
-    // ---------------------------------------------------------------- 챗봇·설문 (저장 안 함)
+    // ---------------------------------------------------------------- 챗봇(로그인 필요)·설문(로그인 없이) — 둘 다 저장 안 함
 
     public record GenerateRequest(String message) {}
 
+    /** AI 호출 비용·무료 한도를 보호하려고 로그인한 사용자만 쓸 수 있다 */
     @PostMapping("/generate")
-    public ApiResponse<ChatPipelineService.Result> generate(@RequestBody GenerateRequest req) {
+    public ApiResponse<ChatPipelineService.Result> generate(@RequestBody GenerateRequest req, HttpSession session) {
+        LoginUser.require(session);
         return ApiResponse.ok(chat.generate(req.message()));
     }
 

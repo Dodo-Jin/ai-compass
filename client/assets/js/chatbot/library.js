@@ -2,7 +2,8 @@
 // 검색 · 정렬 · 페이지네이션 · 카드/리스트 보기 · 열기(chat.html?id=N) · 삭제(확인 모달)
 import { h, formatDate, debounce, errorMessage, setBusy } from './util.js';
 import { listPipelines, deletePipeline, USE_MOCK } from './pipeline-api.js';
-import { showMockUser, MOCK_USER } from './mock-user.js';
+import { showHeaderUser, redirectIfUnauthorized } from './session-user.js';
+import { api } from '/assets/js/common/api.js';
 
 const SIZE = 12;
 const SORTS = ['latest', 'oldest', 'title'];
@@ -33,18 +34,22 @@ function readView() {
   }
 }
 
-// ---------------------------------------------------------------- 프로필 (로그인 연동 전)
+// ---------------------------------------------------------------- 프로필
 await window.layoutReady; // 프로필 카드가 공용 partial 이라 삽입이 끝난 뒤에 채운다
-showMockUser();
-if (USE_MOCK) {
-  $('mock-badge').hidden = false;
-  $('profile-name').textContent = MOCK_USER.username;
-  $('profile-email').textContent = MOCK_USER.email;
+if (USE_MOCK) $('mock-badge').hidden = false;
+showHeaderUser().then(async (user) => {
+  if (!user) return; // 비로그인이면 아래 목록 조회가 401 을 받아 로그인 화면으로 보낸다
+  $('profile-name').textContent = user.username;
+  $('profile-email').textContent = user.email;
   $('profile-email').hidden = false;
-  // 즐겨찾기·리뷰는 다른 담당자의 API 라서 목 모드에서만 임시 숫자를 보여준다
-  $('stat-favorites').textContent = '8';
-  $('stat-reviews').textContent = '3';
-}
+  if (USE_MOCK) {
+    $('stat-favorites').textContent = '8'; // 목 모드에서만 임시 숫자
+    $('stat-reviews').textContent = '3';
+    return;
+  }
+  // 작성한 리뷰 수는 A 의 내 리뷰 API 의 totalElements. 즐겨찾기 수는 C 의 API 가 생기면 연결한다(그때까지 –)
+  api('/users/me/reviews?page=1&size=1').then((r) => { $('stat-reviews').textContent = String(r.totalElements); }).catch(() => {});
+});
 
 // ---------------------------------------------------------------- 컨트롤
 $('q').value = state.q;
@@ -112,6 +117,7 @@ async function load() {
     render();
   } catch (err) {
     if (mine !== requestSeq) return;
+    if (redirectIfUnauthorized(err)) return; // 보관함은 로그인이 필요하다
     renderState('error', err);
   } finally {
     if (mine === requestSeq) content.removeAttribute('aria-busy');
@@ -242,6 +248,7 @@ $('delete-confirm').addEventListener('click', async () => {
     await load();
     $('summary').focus(); // 삭제한 버튼이 사라졌으니 포커스를 목록 위로 옮긴다
   } catch (err) {
+    if (redirectIfUnauthorized(err)) return;
     $('delete-error').replaceChildren(h('div', { class: 'alert alert-danger py-2 mb-0' }, `삭제하지 못했어요. ${errorMessage(err)}`));
   } finally {
     setBusy(button, false);
