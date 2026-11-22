@@ -100,6 +100,26 @@ public class AuthService {
         return toUserDto(user);
     }
 
+    @Transactional
+    public void deleteMe(Integer userId, String password) {
+        if (userId == null) {
+            throw new AuthException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED", "로그인이 필요합니다.");
+        }
+        if (password == null || password.isBlank()) {
+            throw new AuthException(HttpStatus.BAD_REQUEST, "INVALID_PASSWORD", "회원 탈퇴를 위해 현재 비밀번호를 입력해 주세요.");
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AuthException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "사용자를 찾을 수 없습니다."));
+
+        if (!passwordHasher.matches(password, user.getPassword())) {
+            throw new AuthException(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", "비밀번호가 올바르지 않습니다.");
+        }
+
+        // schema.sql의 ON DELETE CASCADE에 의해 해당 유저의 리뷰·즐겨찾기·파이프라인도 함께 삭제됨
+        userRepository.delete(user);
+    }
+
     private Map<String, Object> toUserDto(User user) {
         Map<String, Object> dto = new LinkedHashMap<>();
         dto.put("userId", user.getUserId());
