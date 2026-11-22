@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +28,8 @@ public class AuthController {
     public record SignupRequest(String email, String password, String username) {}
 
     public record LoginRequest(String email, String password) {}
+
+    public record DeleteAccountRequest(String password) {}
 
     @GetMapping("/api/auth")
     public Map<String, String> ping() {
@@ -73,6 +76,17 @@ public class AuthController {
         Integer userId = extractUserId(session.getAttribute(SESSION_USER_ID));
         Map<String, Object> user = authService.getMe(userId);
         return ResponseEntity.ok(successResponse(user));
+    }
+
+    @DeleteMapping("/api/v1/users/me")
+    public ResponseEntity<Void> deleteMe(
+            @RequestBody(required = false) DeleteAccountRequest request,
+            HttpSession session) {
+        Integer userId = extractUserId(session.getAttribute(SESSION_USER_ID));
+        String password = request != null ? request.password() : null;
+        authService.deleteMe(userId, password);
+        session.invalidate();
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(AuthException.class)

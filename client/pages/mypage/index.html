@@ -39,6 +39,13 @@
     .star-btn.active {
       color: #f59e0b;
     }
+    .danger-zone {
+      margin-top: 40px;
+      padding: 18px 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(220, 53, 69, 0.22);
+      background: rgba(220, 53, 69, 0.03);
+    }
   </style>
 </head>
 <body class="pl-page">
@@ -81,7 +88,7 @@
                 <section class="mb-5">
                   <div class="d-flex justify-content-between align-items-center mb-3">
                     <h2 class="h5 fw-bold mb-0" style="font-family:var(--heading-font,'Nunito',sans-serif);color:var(--heading-color,#012970);">내 계정 정보</h2>
-                    <button type="button" id="logout-btn" class="pl-btn pl-btn-sm pl-btn-danger">
+                    <button type="button" id="logout-btn" class="pl-btn pl-btn-sm">
                       <i class="bi bi-box-arrow-right me-1"></i>로그아웃
                     </button>
                   </div>
@@ -114,6 +121,15 @@
                   <nav aria-label="리뷰 페이지 이동" class="mt-3">
                     <ul id="my-review-pager" class="pl-pager"></ul>
                   </nav>
+                </section>
+
+                <!-- 회원 탈퇴 -->
+                <section class="danger-zone d-flex flex-wrap justify-content-between align-items-center gap-3">
+                  <div>
+                    <h3 class="h6 fw-bold text-danger mb-1">회원 탈퇴</h3>
+                    <p class="small text-muted mb-0">탈퇴 시 계정 정보와 저장한 파이프라인, 즐겨찾기, 작성한 리뷰가 모두 삭제되며 복구할 수 없습니다.</p>
+                  </div>
+                  <button type="button" id="open-withdraw-btn" class="pl-btn pl-btn-sm pl-btn-danger">회원 탈퇴</button>
                 </section>
               </div>
             </div>
@@ -156,6 +172,32 @@
     </div>
   </div>
 
+  <!-- 회원 탈퇴 확인 모달 -->
+  <div class="modal fade" id="withdraw-modal" tabindex="-1" aria-labelledby="withdraw-title">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title fs-5 text-danger" id="withdraw-title">회원 탈퇴 확인</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+        </div>
+        <form id="withdraw-form" novalidate>
+          <div class="modal-body">
+            <p class="small mb-2">정말 탈퇴하시겠습니까? 탈퇴하면 <strong>계정, 저장한 파이프라인, 즐겨찾기, 리뷰가 영구 삭제</strong>됩니다.</p>
+            <div class="mb-2">
+              <label for="withdraw-password" class="form-label small fw-semibold">본인 확인을 위해 현재 비밀번호를 입력해 주세요</label>
+              <input type="password" id="withdraw-password" class="form-control" placeholder="현재 비밀번호 입력" autocomplete="current-password" required>
+            </div>
+            <div id="withdraw-error" class="alert alert-danger py-2 small d-none mb-0"></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="pl-btn pl-btn-sm" data-bs-dismiss="modal">취소</button>
+            <button type="submit" id="withdraw-confirm-btn" class="pl-btn pl-btn-sm pl-btn-danger">탈퇴하기</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <div id="footer"></div>
 
   <script src="/assets/vendor/flexstart/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -175,6 +217,14 @@
       const modalError = document.getElementById('modal-edit-error');
       const modalSaveBtn = document.getElementById('modal-save-btn');
       const modalStarBtns = document.querySelectorAll('#modal-star-picker .star-btn');
+
+      const openWithdrawBtn = document.getElementById('open-withdraw-btn');
+      const withdrawModalEl = document.getElementById('withdraw-modal');
+      const withdrawModal = new bootstrap.Modal(withdrawModalEl);
+      const withdrawForm = document.getElementById('withdraw-form');
+      const withdrawPassword = document.getElementById('withdraw-password');
+      const withdrawError = document.getElementById('withdraw-error');
+      const withdrawConfirmBtn = document.getElementById('withdraw-confirm-btn');
 
       const reviewsById = new Map();
       let currentPage = 1;
@@ -390,6 +440,49 @@
         if (!confirm('로그아웃 하시겠습니까?')) return;
         await fetch('/api/v1/auth/logout', { method: 'POST', credentials: 'same-origin' });
         location.href = '/pages/auth/login.html';
+      });
+
+      openWithdrawBtn.addEventListener('click', () => {
+        withdrawPassword.value = '';
+        withdrawError.classList.add('d-none');
+        withdrawModal.show();
+      });
+
+      withdrawForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        withdrawError.classList.add('d-none');
+        const password = withdrawPassword.value;
+        if (!password) {
+          withdrawError.textContent = '현재 비밀번호를 입력해 주세요.';
+          withdrawError.classList.remove('d-none');
+          return;
+        }
+
+        withdrawConfirmBtn.disabled = true;
+        withdrawConfirmBtn.textContent = '처리 중...';
+        try {
+          const res = await fetch('/api/v1/users/me', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({ password })
+          });
+          if (res.status === 204 || res.ok) {
+            withdrawModal.hide();
+            alert('회원 탈퇴가 완료되었습니다.');
+            location.href = '/';
+            return;
+          }
+          const json = await res.json().catch(() => ({}));
+          withdrawError.textContent = json.error?.message || '회원 탈퇴에 실패했습니다.';
+          withdrawError.classList.remove('d-none');
+        } catch (_) {
+          withdrawError.textContent = '서버와 통신 중 오류가 발생했습니다.';
+          withdrawError.classList.remove('d-none');
+        } finally {
+          withdrawConfirmBtn.disabled = false;
+          withdrawConfirmBtn.textContent = '탈퇴하기';
+        }
       });
 
       await loadMyReviews();
